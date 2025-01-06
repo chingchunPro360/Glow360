@@ -19,11 +19,6 @@ const PROMOTIONS = [
 ];
 
 export default function PromotionCard() {
-  const handleClaimOffer = (code) => {
-    navigator.clipboard.writeText(code);
-    alert(`Offer code ${code} copied to clipboard!`);
-  };
-
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
       <h3 className="font-semibold mb-4">Current Promotions</h3>
@@ -34,29 +29,4 @@ export default function PromotionCard() {
             className="border rounded-lg p-4 bg-gradient-to-r from-blue-50 to-white"
           >
             <h4 className="font-semibold text-lg text-blue-600 mb-2">
-              {promo.title}
-            </h4>
-            <p className="text-gray-600 text-sm mb-3">
-              {promo.description}
-            </p>
-            <div className="flex items-center text-sm text-gray-500 mb-3">
-              <FaClock className="mr-1" />
-              <span>
-                Expires: {new Date(promo.expiryDate).toLocaleDateString()}
-              </span>
-            </div>
-            <div className="bg-gray-100 p-2 rounded text-center mb-3">
-              <span className="font-mono font-medium">{promo.code}</span>
-            </div>
-            <button 
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-              onClick={() => handleClaimOffer(promo.code)}
-            >
-              Claim Offer
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+              {promo.

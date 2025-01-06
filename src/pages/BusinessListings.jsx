@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import BusinessCardGrid from '../components/BusinessCardGrid';  // 改用 BusinessCardGrid
+import BusinessCardGrid from '../components/BusinessCardGrid';
 import FilterSidebar from '../components/listing/FilterSidebar';
 import MapView from '../components/listing/MapView';
 import ServiceCategories from '../components/SearchCategories';
@@ -50,38 +50,39 @@ export default function BusinessListings() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header 
-        showMap={showMap}
-        setShowMap={setShowMap}
-        showFilters={showFilters}
-        setShowFilters={setShowFilters}
-      />
+    <div className="min-h-screen bg-gray-50">
+      {/* Fixed Header */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+        <Header 
+          showMap={showMap}
+          setShowMap={setShowMap}
+          showFilters={showFilters}
+          setShowFilters={setShowFilters}
+        />
+      </div>
       
-      <main className="flex-grow">
-        {/* Categories Section */}
-        <div className="bg-white py-4 border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide">
-              {CATEGORIES.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => {
-                    setSelectedFilters(prev => ({
-                      ...prev,
-                      serviceType: [category]
-                    }));
-                  }}
-                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
-                    selectedFilters.serviceType.includes(category)
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
+      <main className="pt-16">
+        {/* Categories Section - Removed background and border */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex overflow-x-auto gap-4 scrollbar-hide">
+            {CATEGORIES.map((category) => (
+              <button
+                key={category}
+                onClick={() => {
+                  setSelectedFilters(prev => ({
+                    ...prev,
+                    serviceType: [category]
+                  }));
+                }}
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
+                  selectedFilters.serviceType.includes(category)
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -92,10 +93,12 @@ export default function BusinessListings() {
               {/* Filter Sidebar */}
               {showFilters && (
                 <div className="w-64 flex-shrink-0">
-                  <FilterSidebar
-                    filters={selectedFilters}
-                    onChange={setSelectedFilters}
-                  />
+                  <div className="sticky top-24">
+                    <FilterSidebar
+                      filters={selectedFilters}
+                      onChange={setSelectedFilters}
+                    />
+                  </div>
                 </div>
               )}
 

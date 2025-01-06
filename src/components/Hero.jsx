@@ -4,10 +4,7 @@ import SearchBar from './SearchBar';
 
 const CATEGORIES = [
   'Hair Salon', 'Barbershop', 'Nail Salon', 'Spa', 'Massage',
-  'Beauty Salon', 'Facial', 'Waxing', 'Makeup', 'Lashes',
-  'Hair Removal', 'Tanning', 'Threading', 'Body Treatment',
-  'Hair Extensions', 'Tattoo', 'Piercing', 'Permanent Makeup',
-  'Eyebrows', 'Men\'s Grooming'
+  'Beauty Salon', 'Facial', 'Waxing', 'Makeup', 'Lashes'
 ];
 
 export default function Hero() {
@@ -18,7 +15,7 @@ export default function Hero() {
   };
 
   return (
-    <div className="relative h-[600px]">
+    <div className="relative h-[600px] -mt-16"> {/* Negative margin to compensate for header padding */}
       {/* Background Image */}
       <div className="absolute inset-0">
         <img

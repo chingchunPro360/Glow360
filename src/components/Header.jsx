@@ -39,23 +39,19 @@ export default function Header({ showMap, setShowMap, showFilters, setShowFilter
   }, [location.pathname]);
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-sm">
+    <header className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center h-16">
           {/* Logo */}
-          <Link to="/" className="w-32 flex-shrink-0">
+          <Link to="/" className="flex-shrink-0">
             <span className="text-2xl font-bold text-blue-600">Glow360</span>
           </Link>
 
-          {/* Search Bar Container */}
-          <div className="flex-1 flex justify-center">
-            <div 
-              className={`w-full max-w-[640px] transition-all duration-300 ${
-                showSearch 
-                  ? 'opacity-100 translate-y-0' 
-                  : 'opacity-0 translate-y-4 pointer-events-none'
-              }`}
-            >
+          {/* Search Bar */}
+          <div className="flex-1 flex justify-center px-4">
+            <div className={`w-full max-w-[640px] transition-all duration-300 ${
+              showSearch ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
+            }`}>
               <SearchBar 
                 onSearch={handleSearch}
                 showFilters={showFilters}
@@ -65,7 +61,7 @@ export default function Header({ showMap, setShowMap, showFilters, setShowFilter
           </div>
 
           {/* Right Section */}
-          <div className="w-32 flex items-center justify-end space-x-4">
+          <div className="flex items-center space-x-4">
             {isListingsPage && (
               <button
                 onClick={() => setShowMap?.(!showMap)}
