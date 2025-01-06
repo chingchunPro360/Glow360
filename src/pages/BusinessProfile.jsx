@@ -61,48 +61,40 @@ function BusinessProfile() {
       </div>
       
       <main>
-        {/* Hero Section */}
-        <div className="relative h-[400px]">
-          <img
-            src={business.image}
-            alt={business.name}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-          <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-            <div className="max-w-7xl mx-auto">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h1 className="text-4xl font-bold mb-2">{business.name}</h1>
-                  <div className="flex items-center gap-4 text-lg">
-                    <span>{business.category}</span>
-                    <span>•</span>
-                    <div className="flex items-center">
-                      <FaStar className="text-yellow-400 mr-1" />
-                      <span>{business.rating}</span>
-                      <span className="ml-1">({business.reviewCount} reviews)</span>
-                    </div>
-                    <span>•</span>
-                    <div className="flex items-center">
-                      <FaMapMarkerAlt className="mr-1" />
-                      <span>{business.location}</span>
-                    </div>
+        {/* Simple Title Section */}
+        <div className="border-b">
+          <div className="max-w-7xl mx-auto px-4 py-6">
+            <div className="flex justify-between items-start">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">{business.name}</h1>
+                <div className="flex items-center gap-4 text-gray-600">
+                  <span>{business.category}</span>
+                  <span>•</span>
+                  <div className="flex items-center">
+                    <FaStar className="text-yellow-400 mr-1" />
+                    <span>{business.rating}</span>
+                    <span className="ml-1">({business.reviewCount} reviews)</span>
+                  </div>
+                  <span>•</span>
+                  <div className="flex items-center">
+                    <FaMapMarkerAlt className="mr-1" />
+                    <span>{business.location}</span>
                   </div>
                 </div>
-                <div className="flex gap-4">
-                  <button 
-                    onClick={() => setIsFavorite(!isFavorite)}
-                    className="p-2 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30"
-                  >
-                    <FaHeart className={isFavorite ? 'text-red-500' : 'text-white'} />
-                  </button>
-                  <button 
-                    onClick={() => {}}
-                    className="p-2 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30"
-                  >
-                    <FaShare className="text-white" />
-                  </button>
-                </div>
+              </div>
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => setIsFavorite(!isFavorite)}
+                  className="p-2 rounded-full hover:bg-gray-100"
+                >
+                  <FaHeart className={isFavorite ? 'text-red-500' : 'text-gray-400'} />
+                </button>
+                <button 
+                  onClick={() => {}}
+                  className="p-2 rounded-full hover:bg-gray-100"
+                >
+                  <FaShare className="text-gray-400" />
+                </button>
               </div>
             </div>
           </div>
@@ -173,7 +165,7 @@ function BusinessProfile() {
                   ) : (
                     <button
                       onClick={() => setShowBooking(true)}
-                      className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700"
+                      className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700"
                     >
                       Check Availability
                     </button>
