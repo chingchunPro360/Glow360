@@ -4,8 +4,7 @@ import {
   FORM_CONFIG, 
   VALIDATION_RULES, 
   ERROR_MESSAGES,
-  BOOKING_CONFIG,
-  AVAILABLE_TIMES 
+  BOOKING_CONFIG
 } from '../../data';
 
 export default function BookingCalendar({ business }) {
@@ -16,7 +15,6 @@ export default function BookingCalendar({ business }) {
     notes: ''
   });
   const [errors, setErrors] = useState({});
-  const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -121,7 +119,6 @@ export default function BookingCalendar({ business }) {
           notes: ''
         });
         setSuccess(false);
-        setShowForm(false);
       }, 3000);
       
     } catch (error) {
@@ -200,7 +197,7 @@ export default function BookingCalendar({ business }) {
                 <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-3 gap-2">
-                {AVAILABLE_TIMES.map((time) => (
+                {BOOKING_CONFIG.AVAILABLE_TIMES.map((time) => (
                   <button
                     key={time}
                     type="button"

@@ -9,7 +9,7 @@ export default function PromotionCard({ businessId }) {
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
-      <h3 className="font-semibold mb-4">Current Promotions</h3>
+      <h3 className="text-lg font-semibold mb-4">Current Promotions</h3>
       <div className="space-y-4">
         {promotions.map((promo) => (
           <div
