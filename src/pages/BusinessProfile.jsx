@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { FaStar, FaMapMarkerAlt, FaPhone, FaEnvelope, FaInstagram, FaFacebook, 
   FaHeart, FaShare, FaClock } from 'react-icons/fa';
@@ -17,10 +17,11 @@ function BusinessProfile() {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [showStickyHeader, setShowStickyHeader] = useState(false);
   
+  const titleRef = useRef(null);
   const business = MOCK_BUSINESSES.find(b => b.id === Number(id));
 
-  // Get current day for business hours highlight
   const getCurrentDay = () => {
     const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     const dayIndex = new Date().getDay();
@@ -28,6 +29,18 @@ function BusinessProfile() {
   };
 
   const today = getCurrentDay();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (titleRef.current) {
+        const titleRect = titleRef.current.getBoundingClientRect();
+        setShowStickyHeader(titleRect.bottom <= 64);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   if (!business) {
     return (
@@ -60,9 +73,52 @@ function BusinessProfile() {
         />
       </div>
       
+      {/* Sticky Business Header */}
+      <div className={`fixed top-16 left-0 right-0 bg-white border-b transform ${
+        showStickyHeader ? 'translate-y-0' : '-translate-y-full'
+      } transition-transform duration-300 z-40 shadow-sm`}>
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-8">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">{business.name}</h2>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <FaStar className="text-yellow-400" />
+                  <span>{business.rating}</span>
+                  <span>•</span>
+                  <span>{business.category}</span>
+                </div>
+              </div>
+              <div className="hidden md:block text-sm text-gray-600">
+                <div className="flex items-center">
+                  <FaMapMarkerAlt className="mr-1" />
+                  <span>{business.location}</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="hidden sm:block">
+                <button
+                  onClick={() => setIsFavorite(!isFavorite)}
+                  className="p-2 rounded-full hover:bg-gray-100"
+                >
+                  <FaHeart className={isFavorite ? 'text-red-500' : 'text-gray-400'} />
+                </button>
+              </div>
+              <button
+                onClick={() => setShowBooking(true)}
+                className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700"
+              >
+                Book Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
       <main>
-        {/* Simple Title Section */}
-        <div className="border-b">
+        {/* Original Title Section */}
+        <div className="border-b" ref={titleRef}>
           <div className="max-w-7xl mx-auto px-4 py-6">
             <div className="flex justify-between items-start">
               <div>
