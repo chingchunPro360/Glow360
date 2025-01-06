@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaStar, FaMapMarkerAlt, FaDollarSign } from 'react-icons/fa';
-import { DEFAULT_IMAGES } from '../data';
-import { UI_CONFIG, COMPONENT_CONFIG } from '../data/uiConfig';
+import { DEFAULT_IMAGES } from '../data/constants';  // 直接從 constants 導入
 
 export default function BusinessCard({ business }) {
   if (!business) return null;
