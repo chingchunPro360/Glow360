@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { FaStar, FaMapMarkerAlt, FaPhone, FaEnvelope, FaInstagram, FaFacebook, 
   FaHeart, FaShare, FaClock } from 'react-icons/fa';
 import { MOCK_BUSINESSES } from '../data/mockBusinesses';
@@ -7,17 +7,17 @@ import PhotoCarousel from '../components/PhotoCarousel';
 import StaffCarousel from '../components/profile/StaffCarousel';
 import Header from '../components/Header';
 
-function BusinessProfile() {
+export default function BusinessProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
   
-  // State declarations
   const [showBooking, setShowBooking] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [showStickyHeader, setShowStickyHeader] = useState(false);
+  const [showBookingCard, setShowBookingCard] = useState(true);
   
   const titleRef = useRef(null);
   const business = MOCK_BUSINESSES.find(b => b.id === Number(id));
@@ -34,7 +34,9 @@ function BusinessProfile() {
     const handleScroll = () => {
       if (titleRef.current) {
         const titleRect = titleRef.current.getBoundingClientRect();
-        setShowStickyHeader(titleRect.bottom <= 64);
+        const isHeaderVisible = titleRect.bottom <= 64;
+        setShowStickyHeader(isHeaderVisible);
+        setShowBookingCard(!isHeaderVisible);
       }
     };
 
@@ -63,7 +65,6 @@ function BusinessProfile() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Fixed Header */}
       <div className="sticky top-0 z-50">
         <Header 
           showMap={showMap}
@@ -72,11 +73,10 @@ function BusinessProfile() {
           setShowFilters={setShowFilters}
         />
       </div>
-      
-      {/* Sticky Business Header */}
+
       <div className={`fixed top-16 left-0 right-0 bg-white border-b transform ${
         showStickyHeader ? 'translate-y-0' : '-translate-y-full'
-      } transition-transform duration-300 z-40 shadow-sm`}>
+      } transition-transform duration-300 z-40 shadow-sm h-16`}>
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-8">
@@ -115,9 +115,8 @@ function BusinessProfile() {
           </div>
         </div>
       </div>
-      
+
       <main>
-        {/* Original Title Section */}
         <div className="border-b" ref={titleRef}>
           <div className="max-w-7xl mx-auto px-4 py-6">
             <div className="flex justify-between items-start">
@@ -158,14 +157,11 @@ function BusinessProfile() {
 
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Content */}
             <div className="lg:col-span-2">
-              {/* Photo Carousel */}
               <section className="mb-8 rounded-lg overflow-hidden shadow-sm">
                 <PhotoCarousel photos={business.photos} />
               </section>
 
-              {/* Services */}
               <section className="bg-white rounded-lg shadow-sm p-6 mb-8">
                 <h2 className="text-2xl font-bold mb-4">Services</h2>
                 <div className="grid gap-4">
@@ -177,13 +173,11 @@ function BusinessProfile() {
                 </div>
               </section>
 
-              {/* Staff Section */}
               <section className="bg-white rounded-lg shadow-sm p-6 mb-8">
                 <h2 className="text-2xl font-bold mb-4">Our Team</h2>
                 <StaffCarousel />
               </section>
 
-              {/* About Us */}
               <section className="bg-white rounded-lg shadow-sm p-6 mb-8">
                 <h2 className="text-2xl font-bold mb-4">About Us</h2>
                 <p className="text-gray-600">
@@ -199,7 +193,6 @@ function BusinessProfile() {
                 </p>
               </section>
 
-              {/* Reviews */}
               <section className="bg-white rounded-lg shadow-sm p-6">
                 <div className="flex items-center mb-4">
                   <FaStar className="text-yellow-400" />
@@ -208,28 +201,35 @@ function BusinessProfile() {
               </section>
             </div>
 
-            {/* Sidebar */}
             <div className="lg:col-span-1">
-              <div className="sticky top-[88px] space-y-6">
-                {/* Booking Widget */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h3 className="font-semibold mb-4">Book an Appointment</h3>
-                  {showBooking ? (
-                    <div className="p-4 bg-gray-50 rounded">
-                      Booking Calendar Placeholder
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => setShowBooking(true)}
-                      className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700"
-                    >
-                      Check Availability
-                    </button>
-                  )}
+              <div className={`sticky transition-all duration-300 ${
+                showBookingCard 
+                  ? 'top-[88px]' 
+                  : 'top-[80px]'
+              }`}>
+                <div className={`transition-all duration-300 ${
+                  showBookingCard 
+                    ? 'opacity-100 visible h-auto mb-6 transform translate-y-0' 
+                    : 'opacity-0 invisible h-0 mb-0 transform -translate-y-4'
+                }`}>
+                  <div className="bg-white rounded-lg shadow-sm p-6">
+                    <h3 className="font-semibold mb-4">Book an Appointment</h3>
+                    {showBooking ? (
+                      <div className="p-4 bg-gray-50 rounded">
+                        Booking Calendar Placeholder
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setShowBooking(true)}
+                        className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700"
+                      >
+                        Check Availability
+                      </button>
+                    )}
+                  </div>
                 </div>
 
-                {/* Contact Info */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
+                <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
                   <h3 className="font-semibold mb-4">Contact Information</h3>
                   <div className="space-y-4">
                     <div className="flex items-center">
@@ -247,7 +247,6 @@ function BusinessProfile() {
                   </div>
                 </div>
 
-                {/* Business Hours Card */}
                 <div className="bg-white rounded-lg shadow-sm p-6">
                   <h3 className="font-semibold mb-4 flex items-center">
                     <FaClock className="mr-2" />
@@ -292,5 +291,3 @@ function BusinessProfile() {
     </div>
   );
 }
-
-export default BusinessProfile;
