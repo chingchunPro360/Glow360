@@ -1,16 +1,8 @@
 import React from 'react';
 import { FaStar } from 'react-icons/fa';
+import { CATEGORIES } from '../../data/mockBusinesses';
 
 const PRICE_RANGES = ['$', '$$', '$$$', '$$$$'];
-const SERVICE_TYPES = [
-  'Hair Salon',
-  'Barbershop',
-  'Nail Salon',
-  'Spa',
-  'Beauty Salon',
-  'Massage',
-  'Facial'
-];
 
 export default function FilterSidebar({ filters, onChange }) {
   const handleServiceTypeChange = (type) => {
@@ -35,7 +27,7 @@ export default function FilterSidebar({ filters, onChange }) {
       <div className="mb-6">
         <h4 className="font-medium mb-2">Service Type</h4>
         <div className="space-y-2">
-          {SERVICE_TYPES.map((type) => (
+          {CATEGORIES.map((type) => (
             <label key={type} className="flex items-center">
               <input
                 type="checkbox"

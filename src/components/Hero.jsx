@@ -1,11 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import SearchBar from './SearchBar';
-
-const CATEGORIES = [
-  'Hair Salon', 'Barbershop', 'Nail Salon', 'Spa', 'Massage',
-  'Beauty Salon', 'Facial', 'Waxing', 'Makeup', 'Lashes'
-];
+import { CATEGORIES } from '../data/mockBusinesses';
 
 export default function Hero() {
   const navigate = useNavigate();
