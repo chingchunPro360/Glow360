@@ -39,12 +39,10 @@ export default function SearchBar({ showFilters, setShowFilters }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (selectedIndex >= 0 && selectedIndex < filteredSuggestions.length) {
-      // If an item is selected, use that
       const selectedService = filteredSuggestions[selectedIndex];
       handleSearch(selectedService);
       setQuery(selectedService);
     } else if (query.trim()) {
-      // Otherwise use the input value
       handleSearch(query.trim());
     }
     setShowSuggestions(false);
@@ -110,8 +108,9 @@ export default function SearchBar({ showFilters, setShowFilters }) {
           <input
             ref={inputRef}
             type="text"
-            className="w-full px-4 py-2.5 pl-10 pr-24 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Search services, businesses, or locations..."
+            className="w-full h-12 px-4 py-2 pl-10 pr-24 rounded-full border border-gray-300 
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 text-base md:text-lg"
+            placeholder="Search services or locations..."
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
@@ -154,12 +153,13 @@ export default function SearchBar({ showFilters, setShowFilters }) {
       {showSuggestions && filteredSuggestions.length > 0 && (
         <div 
           ref={suggestionsRef}
-          className="absolute w-full mt-2 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50"
+          className="absolute w-full mt-2 bg-white rounded-lg shadow-lg border border-gray-200 
+                   overflow-hidden z-50"
         >
           {filteredSuggestions.map((suggestion, index) => (
             <div
               key={suggestion}
-              className={`px-4 py-2 cursor-pointer ${
+              className={`px-4 py-3 cursor-pointer ${
                 index === selectedIndex
                   ? 'bg-blue-50 text-blue-700'
                   : 'hover:bg-gray-50'

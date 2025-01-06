@@ -62,7 +62,7 @@ export default function BusinessListings() {
       </div>
       
       <main className="pt-16">
-        {/* Categories Section - Removed background and border */}
+        {/* Categories Section */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex overflow-x-auto gap-4 scrollbar-hide">
             {CATEGORIES.map((category) => (
@@ -127,12 +127,10 @@ export default function BusinessListings() {
                     }}
                   />
                 ) : (
-                  <div className="overflow-hidden">
-                    <BusinessCardGrid 
-                      businesses={filteredBusinesses}
-                      scrollable={true}
-                    />
-                  </div>
+                  <BusinessCardGrid 
+                    businesses={filteredBusinesses}
+                    scrollable={true}
+                  />
                 )}
               </div>
             </div>

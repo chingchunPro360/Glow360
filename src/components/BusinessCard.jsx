@@ -11,13 +11,11 @@ export default function BusinessCard({ business }) {
     image,
     rating,
     reviewCount,
-    description,
     category,
     location,
     price,
     isOpen,
-    distance,
-    services = []
+    distance
   } = business;
 
   const handleImageError = (e) => {
@@ -33,83 +31,125 @@ export default function BusinessCard({ business }) {
           key={index}
           className={`${
             index < priceLevel ? 'text-green-600' : 'text-gray-300'
-          }`}
+          } text-sm`}
         />
       ));
   };
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-      <Link to={`/business/${id}`}>
-        <div className="relative aspect-w-3 aspect-h-2">
-          <img
-            className="w-full h-48 object-cover"
-            src={image}
-            alt={name}
-            onError={handleImageError}
-          />
+      <Link to={`/business/${id}`} className="block">
+        {/* Mobile Layout */}
+        <div className="md:hidden">
+          <div className="flex h-32">
+            {/* Image */}
+            <div className="w-32 h-full flex-shrink-0">
+              <img
+                className="w-full h-full object-cover"
+                src={image}
+                alt={name}
+                onError={handleImageError}
+              />
+            </div>
+            
+            {/* Content */}
+            <div className="flex-1 p-3 flex flex-col justify-between">
+              <div>
+                {/* Shop Name */}
+                <h3 className="text-base font-semibold text-gray-900 truncate pr-2">
+                  {name}
+                </h3>
+                
+                {/* Rating and Reviews */}
+                <div className="flex items-center mt-1">
+                  <div className="flex items-center">
+                    <FaStar className="text-yellow-400 w-3 h-3" />
+                    <span className="ml-1 text-sm">{rating}</span>
+                  </div>
+                  <span className="text-xs text-gray-500 ml-1">({reviewCount})</span>
+                </div>
+                
+                {/* Location and Category */}
+                <div className="flex items-center mt-1 text-xs text-gray-500">
+                  <FaMapMarkerAlt className="mr-1 w-3 h-3" />
+                  {distance}
+                  <span className="mx-1">•</span>
+                  {category}
+                </div>
+              </div>
+              
+              {/* Price and Open Status */}
+              <div className="flex items-center justify-between">
+                <div className="flex">
+                  {renderPriceRange(price)}
+                </div>
+                <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
+                  isOpen 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-red-100 text-red-800'
+                }`}>
+                  {isOpen ? 'Open' : 'Closed'}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="p-4">
-          <div className="flex justify-between items-start">
-            <h3 className="text-lg font-semibold">{name}</h3>
-            <span className={`px-2 py-1 rounded text-sm ${
-              isOpen ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-            }`}>
-              {isOpen ? 'Open' : 'Closed'}
-            </span>
+
+        {/* Desktop Layout */}
+        <div className="hidden md:block">
+          <div className="relative">
+            <img
+              className="w-full h-48 object-cover"
+              src={image}
+              alt={name}
+              onError={handleImageError}
+            />
           </div>
-          
-          <div className="flex items-center mt-1">
+          <div className="p-4">
+            <div className="flex justify-between items-start mb-2">
+              <h3 className="text-lg font-semibold truncate pr-2">{name}</h3>
+              <span className={`flex-shrink-0 px-2 py-1 rounded-full text-sm ${
+                isOpen ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+              }`}>
+                {isOpen ? 'Open' : 'Closed'}
+              </span>
+            </div>
+            
             <div className="flex items-center">
-              <FaStar className="text-yellow-400" />
-              <span className="ml-1">{rating}</span>
+              <div className="flex items-center">
+                <FaStar className="text-yellow-400" />
+                <span className="ml-1">{rating}</span>
+              </div>
+              <span className="text-gray-500 ml-1">({reviewCount})</span>
+              <span className="mx-2">•</span>
+              <div className="flex items-center text-gray-500">
+                <FaMapMarkerAlt className="mr-1" />
+                {distance}
+              </div>
             </div>
-            <span className="text-gray-500 ml-1">({reviewCount} reviews)</span>
-            <span className="mx-2">•</span>
-            <div className="flex items-center text-gray-500">
-              <FaMapMarkerAlt className="mr-1" />
-              {distance}
+            
+            <div className="flex items-center justify-between mt-2">
+              <span className="text-sm text-gray-500">{category}</span>
+              <div className="flex">{renderPriceRange(price)}</div>
             </div>
           </div>
-          
-          <div className="flex items-center mt-2">
-            <span className="text-sm text-gray-500">{category}</span>
-            <span className="mx-2">•</span>
-            <div className="flex">{renderPriceRange(price)}</div>
-          </div>
-          
-          <p className="text-gray-600 mt-2 text-sm line-clamp-2">{description}</p>
         </div>
       </Link>
       
-      {/* Services Tags with Gradient Fade */}
-      <div className="px-4 h-[40px] relative">
-        <div className="flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
-          {services.map((service) => (
-            <span
-              key={service}
-              className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded flex-shrink-0"
-            >
-              {service}
-            </span>
-          ))}
+      {/* Book Now Button */}
+      <div className="px-3 pb-3 md:px-4 md:pb-4">
+        <div className="pt-3 md:pt-0 border-t md:border-t-0">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              // TODO: 處理預約邏輯
+            }}
+            className="w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 
+                     transition-colors text-sm md:text-base"
+          >
+            Book Now
+          </button>
         </div>
-        {/* Gradient Overlay */}
-        <div className="absolute top-0 right-0 h-full w-20 bg-gradient-to-l from-white to-transparent pointer-events-none" />
-        <div className="absolute top-0 left-0 h-full w-4 bg-gradient-to-r from-white to-transparent pointer-events-none" />
-      </div>
-
-      {/* Booking Button */}
-      <div className="p-4 pt-2">
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            // TODO: 處理預約邏輯
-          }}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors"
-        >
-          Book Now
-        </button>
       </div>
     </div>
   );
