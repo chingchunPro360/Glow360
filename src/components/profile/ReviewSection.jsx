@@ -1,32 +1,6 @@
 import React, { useState } from 'react';
-import { FaStar, FaStarHalf } from 'react-icons/fa';
-
-const MOCK_REVIEWS = [
-  {
-    id: 1,
-    name: "Sarah M.",
-    rating: 5,
-    date: "2024-02-15",
-    text: "Amazing experience! The staff was professional and friendly. Will definitely come back!",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&h=150"
-  },
-  {
-    id: 2,
-    name: "John D.",
-    rating: 4,
-    date: "2024-02-14",
-    text: "Great service and atmosphere. Really enjoyed my haircut.",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&h=150"
-  },
-  {
-    id: 3,
-    name: "Emily R.",
-    rating: 5,
-    date: "2024-02-13",
-    text: "The best salon experience I've ever had. Truly professional and skilled staff.",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150"
-  }
-];
+import { FaStar } from 'react-icons/fa';
+import { getBusinessReviews } from '../../data';
 
 const RATING_DISTRIBUTION = {
   5: 75,
@@ -38,10 +12,11 @@ const RATING_DISTRIBUTION = {
 
 export default function ReviewSection({ business }) {
   const [selectedRating, setSelectedRating] = useState(null);
-
+  const reviews = getBusinessReviews(business.id);
+  
   const filteredReviews = selectedRating
-    ? MOCK_REVIEWS.filter(review => review.rating === selectedRating)
-    : MOCK_REVIEWS;
+    ? reviews.filter(review => review.rating === selectedRating)
+    : reviews;
 
   return (
     <div>

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaStar, FaMapMarkerAlt, FaDollarSign } from 'react-icons/fa';
+import { DEFAULT_IMAGES } from '../data';
+import { UI_CONFIG, COMPONENT_CONFIG } from '../data/uiConfig';
 
 export default function BusinessCard({ business }) {
   if (!business) return null;
@@ -18,10 +20,6 @@ export default function BusinessCard({ business }) {
     distance
   } = business;
 
-  const handleImageError = (e) => {
-    e.target.src = 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=600&h=400';
-  };
-
   const renderPriceRange = (priceStr = '') => {
     const priceLevel = (priceStr.match(/\$/g) || []).length;
     return Array(4)
@@ -36,6 +34,11 @@ export default function BusinessCard({ business }) {
       ));
   };
 
+  const handleBooking = (e) => {
+    e.preventDefault();
+    // TODO: 處理預約邏輯
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       <Link to={`/business/${id}`} className="block">
@@ -48,7 +51,7 @@ export default function BusinessCard({ business }) {
                 className="w-full h-full object-cover"
                 src={image}
                 alt={name}
-                onError={handleImageError}
+                onError={(e) => { e.target.src = DEFAULT_IMAGES.BUSINESS; }}
               />
             </div>
             
@@ -102,7 +105,7 @@ export default function BusinessCard({ business }) {
               className="w-full h-48 object-cover"
               src={image}
               alt={name}
-              onError={handleImageError}
+              onError={(e) => { e.target.src = DEFAULT_IMAGES.BUSINESS; }}
             />
           </div>
           <div className="p-4">
@@ -140,10 +143,7 @@ export default function BusinessCard({ business }) {
       <div className="px-3 pb-3 md:px-4 md:pb-4">
         <div className="pt-3 md:pt-0 border-t md:border-t-0">
           <button
-            onClick={(e) => {
-              e.preventDefault();
-              // TODO: 處理預約邏輯
-            }}
+            onClick={handleBooking}
             className="w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 
                      transition-colors text-sm md:text-base"
           >

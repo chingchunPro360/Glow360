@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaStar, FaMapMarkerAlt, FaPhone, FaEnvelope, FaInstagram, FaFacebook, 
   FaHeart, FaShare, FaClock } from 'react-icons/fa';
-import { MOCK_BUSINESSES } from '../data/mockBusinesses';
+import { MOCK_BUSINESSES } from '../data';
 import PhotoCarousel from '../components/PhotoCarousel';
 import StaffCarousel from '../components/profile/StaffCarousel';
+import ReviewSection from '../components/profile/ReviewSection';
+import PromotionCard from '../components/profile/PromotionCard';
 import Header from '../components/Header';
 
 export default function BusinessProfile() {
@@ -175,7 +177,7 @@ export default function BusinessProfile() {
 
               <section className="bg-white rounded-lg shadow-sm p-6 mb-8">
                 <h2 className="text-2xl font-bold mb-4">Our Team</h2>
-                <StaffCarousel />
+                <StaffCarousel businessId={business.id} />
               </section>
 
               <section className="bg-white rounded-lg shadow-sm p-6 mb-8">
@@ -194,10 +196,7 @@ export default function BusinessProfile() {
               </section>
 
               <section className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center mb-4">
-                  <FaStar className="text-yellow-400" />
-                  <span className="ml-2">{business.rating} ({business.reviewCount} reviews)</span>
-                </div>
+                <ReviewSection business={business} />
               </section>
             </div>
 
@@ -229,20 +228,40 @@ export default function BusinessProfile() {
                   </div>
                 </div>
 
+                <PromotionCard businessId={business.id} />
+
                 <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
                   <h3 className="font-semibold mb-4">Contact Information</h3>
                   <div className="space-y-4">
                     <div className="flex items-center">
                       <FaPhone className="w-5 h-5 text-gray-400 mr-3" />
-                      <span>123-456-7890</span>
+                      <span>{business.contact.phone}</span>
                     </div>
                     <div className="flex items-center">
                       <FaEnvelope className="w-5 h-5 text-gray-400 mr-3" />
-                      <span>contact@example.com</span>
+                      <span>{business.contact.email}</span>
                     </div>
                     <div className="flex space-x-4 pt-4">
-                      <FaInstagram className="w-6 h-6 text-gray-400 hover:text-gray-600 cursor-pointer" />
-                      <FaFacebook className="w-6 h-6 text-gray-400 hover:text-gray-600 cursor-pointer" />
+                      {business.contact.social.instagram && (
+                        <a 
+                          href={`https://instagram.com/${business.contact.social.instagram}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-gray-400 hover:text-gray-600"
+                        >
+                          <FaInstagram className="w-6 h-6" />
+                        </a>
+                      )}
+                      {business.contact.social.facebook && (
+                        <a 
+                          href={`https://facebook.com/${business.contact.social.facebook}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-gray-400 hover:text-gray-600"
+                        >
+                          <FaFacebook className="w-6 h-6" />
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>

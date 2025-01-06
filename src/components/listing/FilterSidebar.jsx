@@ -1,8 +1,6 @@
 import React from 'react';
 import { FaStar } from 'react-icons/fa';
-import { CATEGORIES } from '../../data/mockBusinesses';
-
-const PRICE_RANGES = ['$', '$$', '$$$', '$$$$'];
+import { CATEGORIES, PRICE_RANGES } from '../../data';
 
 export default function FilterSidebar({ filters, onChange }) {
   const handleServiceTypeChange = (type) => {

@@ -1,15 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaSearch, FaFilter, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { CATEGORIES } from '../data';
 
-const SUGGESTED_SERVICES = [
-  'Hair Styling',
-  'Nail Care',
-  'Facial Treatment',
-  'Massage',
-  'Makeup Service',
-  'Hair Coloring'
-];
+// 建議搜尋使用類別作為基礎
+const SUGGESTED_SERVICES = CATEGORIES.slice(0, 6);
 
 export default function SearchBar({ showFilters, setShowFilters }) {
   const [query, setQuery] = useState('');
@@ -19,7 +14,7 @@ export default function SearchBar({ showFilters, setShowFilters }) {
   const suggestionsRef = useRef(null);
   const navigate = useNavigate();
 
-  // Filter suggestions based on input
+  // 根據輸入過濾建議
   const filteredSuggestions = SUGGESTED_SERVICES.filter(service =>
     service.toLowerCase().includes(query.toLowerCase())
   );
@@ -82,7 +77,6 @@ export default function SearchBar({ showFilters, setShowFilters }) {
     }
   };
 
-  // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (suggestionsRef.current && !suggestionsRef.current.contains(event.target) &&

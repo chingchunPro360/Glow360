@@ -1,8 +1,9 @@
 import React from 'react';
 import BusinessCardGrid from './BusinessCardGrid';
-import { MOCK_BUSINESSES } from '../data/mockBusinesses';
+import { MOCK_BUSINESSES } from '../data';
 
 export default function NewBusinesses() {
+  // 獲取最新的8個商家
   const newBusinesses = MOCK_BUSINESSES.slice(-8);
 
   return (

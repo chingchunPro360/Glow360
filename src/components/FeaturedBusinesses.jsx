@@ -1,9 +1,9 @@
 import React from 'react';
 import BusinessCardGrid from './BusinessCardGrid';
-import { MOCK_BUSINESSES } from '../data/mockBusinesses';
+import { MOCK_BUSINESSES } from '../data';
 
 export default function FeaturedBusinesses() {
-  // Get top rated businesses for featured section (rating >= 4.8)
+  // 獲取評分 >= 4.8 的商家作為精選商家
   const featuredBusinesses = MOCK_BUSINESSES
     .filter(business => business.rating >= 4.8)
     .slice(0, 8);
