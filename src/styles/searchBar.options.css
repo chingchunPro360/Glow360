@@ -1,0 +1,37 @@
+/* Option 1: Fixed Width for All */
+.search-bar-fixed {
+  width: 600px; /* or any specific width */
+}
+
+/* Option 2: Percentage Based with Max-Width */
+.search-bar-percentage {
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Option 3: Responsive Breakpoints */
+.search-bar-responsive {
+  width: 100%;
+  max-width: 100%;
+}
+@media (min-width: 640px) { /* sm */
+  .search-bar-responsive {
+    max-width: 400px;
+  }
+}
+@media (min-width: 768px) { /* md */
+  .search-bar-responsive {
+    max-width: 500px;
+  }
+}
+@media (min-width: 1024px) { /* lg */
+  .search-bar-responsive {
+    max-width: 600px;
+  }
+}
+
+/* Option 4: Container Based */
+.search-bar-container {
+  width: min(600px, 90%);
+  margin: 0 auto;
+}
