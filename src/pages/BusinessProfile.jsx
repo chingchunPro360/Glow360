@@ -204,8 +204,8 @@ export default function BusinessProfile() {
             <div className="lg:col-span-1">
               <div className={`sticky transition-all duration-300 ${
                 showBookingCard 
-                  ? 'top-[88px]' 
-                  : 'top-[80px]'
+                  ? 'top-[152px]' // 88px + 64px (sticky header height)
+                  : 'top-[144px]' // 80px + 64px (sticky header height)
               }`}>
                 <div className={`transition-all duration-300 ${
                   showBookingCard 
