@@ -5,10 +5,10 @@ export default function BookingCard({ business, isBusinessTitleVisible }) {
   const [showBooking, setShowBooking] = useState(false);
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
+    <div className="p-6">
       {/* 商家資訊 - 只在電腦版且標題不可見時顯示 */}
       {!isBusinessTitleVisible && (
-        <div className="mb-4">
+        <div className="mb-6">
           <h2 className="text-xl font-bold text-gray-900">{business.name}</h2>
           <div className="flex items-center gap-2 mt-1">
             <div className="flex items-center">
@@ -18,7 +18,6 @@ export default function BookingCard({ business, isBusinessTitleVisible }) {
             <span className="text-gray-500">•</span>
             <span className="text-gray-600">{business.category}</span>
           </div>
-          <div className="mt-4 border-t pt-4" />
         </div>
       )}
 

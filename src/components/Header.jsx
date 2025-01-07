@@ -7,35 +7,34 @@ export default function Header({ showMap, setShowMap, showFilters, setShowFilter
   const location = useLocation();
   const navigate = useNavigate();
   const isListingsPage = location.pathname === '/listings';
-  const [showSearch, setShowSearch] = useState(false);
+  const [showSearch, setShowSearch] = useState(true);
 
   const handleSearch = (query) => {
     navigate(`/listings?search=${encodeURIComponent(query)}`);
   };
 
   useEffect(() => {
-    if (location.pathname !== '/') {
+    if (location.pathname === '/') {
+      const handleScroll = () => {
+        const heroSearchBar = document.querySelector('#hero-search');
+        if (!heroSearchBar) {
+          setShowSearch(true);
+          return;
+        }
+
+        const rect = heroSearchBar.getBoundingClientRect();
+        setShowSearch(rect.bottom < 0);
+      };
+
+      window.addEventListener('scroll', handleScroll);
+      handleScroll();
+
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+      };
+    } else {
       setShowSearch(true);
-      return;
     }
-
-    const handleScroll = () => {
-      const heroSearchBar = document.querySelector('#hero-search');
-      if (!heroSearchBar) {
-        setShowSearch(true);
-        return;
-      }
-
-      const rect = heroSearchBar.getBoundingClientRect();
-      setShowSearch(rect.bottom < 0);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    handleScroll();
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
   }, [location.pathname]);
 
   return (

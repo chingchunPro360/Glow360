@@ -24,23 +24,30 @@ export default function BusinessProfile() {
   const [isBusinessTitleVisible, setIsBusinessTitleVisible] = useState(true);
   
   const titleRef = useRef(null);
+  const lastScrollY = useRef(0);
   const business = MOCK_BUSINESSES.find(b => b.id === Number(id));
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       
-      // 手機版邏輯
       if (window.innerWidth < 768) {
-        setHideMainHeader(true);
-        
+        // 向下滾動超過 50px 時隱藏主 header
+        if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
+          setHideMainHeader(true);
+        }
+        // 向上滾動時顯示主 header
+        else if (currentScrollY < lastScrollY.current) {
+          setHideMainHeader(false);
+        }
+
+        // 商家標題是否可見
         if (titleRef.current) {
           const titleRect = titleRef.current.getBoundingClientRect();
           setShowStickyHeader(titleRect.bottom <= 0);
         }
       } else {
-        // 電腦版邏輯
-        setHideMainHeader(true);
+        setHideMainHeader(false);
         setShowStickyHeader(false);
         
         if (titleRef.current) {
@@ -48,6 +55,8 @@ export default function BusinessProfile() {
           setIsBusinessTitleVisible(titleRect.bottom > 0);
         }
       }
+
+      lastScrollY.current = currentScrollY;
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -71,17 +80,9 @@ export default function BusinessProfile() {
     );
   }
 
-  // 根據屏幕大小決定樣式
-  const mobileStyles = {
-    section: 'md:bg-white md:rounded-lg md:p-6 bg-white border-b border-gray-200 p-1 md:border-none',
-    sectionTitle: 'text-xl font-bold mb-4',
-    contentSpacing: 'space-y-1 md:space-y-6',
-    roundedCorners: 'rounded-[1px] md:rounded-lg'
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
-      {/* 主Header */}
+      {/* Main Header */}
       <div className={`fixed top-0 left-0 right-0 z-50 bg-white transform transition-transform duration-300 ${
         hideMainHeader ? '-translate-y-full' : 'translate-y-0'
       }`}>
@@ -93,11 +94,11 @@ export default function BusinessProfile() {
         />
       </div>
 
-      {/* 手機版 Sticky Header */}
+      {/* Mobile Sticky Header */}
       <div className={`md:hidden fixed left-0 right-0 bg-white border-b transform ${
         showStickyHeader ? 'translate-y-0' : '-translate-y-full'
       } transition-transform duration-300 z-40 shadow-sm top-0`}>
-        <div className="max-w-7xl mx-auto px-4 py-3">
+        <div className="px-6 py-3">
           <div className="flex justify-between items-center">
             <div>
               <h2 className="text-lg font-bold text-gray-900">{business.name}</h2>
@@ -118,10 +119,10 @@ export default function BusinessProfile() {
         </div>
       </div>
 
-      <main>
-        {/* 商家標題區塊 */}
-        <div className="border-b bg-white" ref={titleRef}>
-          <div className="max-w-7xl mx-auto px-4 py-6">
+      <main className="pt-16">
+        {/* Business Title Section */}
+        <section className="bg-white" ref={titleRef}>
+          <div className="px-6 py-6">
             <div className="flex justify-between items-start">
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{business.name}</h1>
@@ -153,96 +154,118 @@ export default function BusinessProfile() {
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* 主要內容區 */}
-        <div className="max-w-7xl mx-auto px-4 py-1 md:py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-1 md:gap-8">
-            {/* 左側內容區 */}
-            <div className={`lg:col-span-2 ${mobileStyles.contentSpacing}`}>
-              {/* 照片輪播 */}
-              <div className={mobileStyles.roundedCorners}>
-                <PhotoCarousel photos={business.photos} />
-              </div>
+        {/* Photo Carousel */}
+        <section className="mb-6">
+          <PhotoCarousel photos={business.photos} />
+        </section>
 
-              {/* 手機版聯絡資訊 */}
-              <div className="lg:hidden">
-                <div className={mobileStyles.section}>
+        {/* Main Content */}
+        <div className="md:max-w-7xl md:mx-auto md:px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+            {/* Left Content */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Mobile Contact Info */}
+              <section className="lg:hidden bg-white">
+                <div className="px-6 py-6">
+                  <h2 className="text-xl font-bold mb-6">Contact Information</h2>
                   <ContactCard business={business} />
                 </div>
-              </div>
+              </section>
 
-              {/* 手機版營業時間 */}
-              <div className="lg:hidden">
-                <div className={mobileStyles.section}>
+              {/* Mobile Business Hours */}
+              <section className="lg:hidden bg-white">
+                <div className="px-6 py-6">
+                  <h2 className="text-xl font-bold mb-6">Business Hours</h2>
                   <BusinessHoursCard business={business} />
                 </div>
-              </div>
+              </section>
 
-              {/* 手機版優惠資訊 */}
-              <div className="lg:hidden">
-                <div className={mobileStyles.section}>
+              {/* Mobile Promotions */}
+              <section className="lg:hidden bg-white">
+                <div className="px-6 py-6">
+                  <h2 className="text-xl font-bold mb-6">Current Promotions</h2>
                   <PromotionCard businessId={business.id} />
                 </div>
-              </div>
+              </section>
 
-              {/* 服務項目 */}
-              <div className={mobileStyles.section}>
-                <h2 className={mobileStyles.sectionTitle}>Services</h2>
-                <div className="grid gap-1 md:gap-4">
-                  {business.services.map((service, index) => (
-                    <div key={index} className="p-4 border rounded-[1px] md:rounded">
-                      {service}
-                    </div>
-                  ))}
+              {/* Services */}
+              <section className="bg-white">
+                <div className="px-6 py-6">
+                  <h2 className="text-xl font-bold mb-6">Services</h2>
+                  <div className="space-y-4">
+                    {business.services.map((service, index) => (
+                      <div key={index} className="p-4 bg-gray-50 rounded">
+                        {service}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              </section>
 
-              {/* 團隊介紹 */}
-              <div className={mobileStyles.section}>
-                <h2 className={mobileStyles.sectionTitle}>Our Team</h2>
-                <StaffCarousel businessId={business.id} />
-              </div>
+              {/* Team */}
+              <section className="bg-white">
+                <div className="px-6 py-6">
+                  <h2 className="text-xl font-bold mb-6">Our Team</h2>
+                  <StaffCarousel businessId={business.id} />
+                </div>
+              </section>
 
-              {/* 關於我們 */}
-              <div className={mobileStyles.section}>
-                <h2 className={mobileStyles.sectionTitle}>About Us</h2>
-                <p className="text-gray-600">
-                  {showFullDescription ? business.description : business.description.slice(0, 150)}
-                  {business.description.length > 150 && (
-                    <button
-                      onClick={() => setShowFullDescription(!showFullDescription)}
-                      className="ml-2 text-blue-600 hover:text-blue-700"
-                    >
-                      {showFullDescription ? 'Show Less' : 'Read More'}
-                    </button>
-                  )}
-                </p>
-              </div>
+              {/* About */}
+              <section className="bg-white">
+                <div className="px-6 py-6">
+                  <h2 className="text-xl font-bold mb-6">About Us</h2>
+                  <p className="text-gray-600">
+                    {showFullDescription ? business.description : business.description.slice(0, 150)}
+                    {business.description.length > 150 && (
+                      <button
+                        onClick={() => setShowFullDescription(!showFullDescription)}
+                        className="ml-2 text-blue-600 hover:text-blue-700"
+                      >
+                        {showFullDescription ? 'Show Less' : 'Read More'}
+                      </button>
+                    )}
+                  </p>
+                </div>
+              </section>
 
-              {/* 評價區塊 */}
-              <div className={mobileStyles.section}>
-                <ReviewSection business={business} />
-              </div>
+              {/* Reviews */}
+              <section className="bg-white">
+                <div className="px-6 py-6">
+                  <ReviewSection business={business} />
+                </div>
+              </section>
             </div>
 
-            {/* 桌面版右側邊欄 */}
-            <div className="hidden lg:block lg:col-span-1">
+            {/* Desktop Sidebar */}
+            <div className="hidden lg:block">
               <div className="sticky top-8 space-y-6">
-                <BookingCard 
-                  business={business} 
-                  isBusinessTitleVisible={isBusinessTitleVisible}
-                />
-                <ContactCard business={business} />
-                <BusinessHoursCard business={business} />
-                <PromotionCard businessId={business.id} />
+                <div className="bg-white rounded-lg">
+                  <BookingCard 
+                    business={business} 
+                    isBusinessTitleVisible={isBusinessTitleVisible}
+                  />
+                </div>
+                <div className="bg-white rounded-lg p-6">
+                  <h3 className="text-lg font-semibold mb-6">Contact Information</h3>
+                  <ContactCard business={business} />
+                </div>
+                <div className="bg-white rounded-lg p-6">
+                  <h3 className="text-lg font-semibold mb-6">Business Hours</h3>
+                  <BusinessHoursCard business={business} />
+                </div>
+                <div className="bg-white rounded-lg p-6">
+                  <h3 className="text-lg font-semibold mb-6">Current Promotions</h3>
+                  <PromotionCard businessId={business.id} />
+                </div>
               </div>
             </div>
           </div>
         </div>
       </main>
 
-      {/* 手機版 Sticky Footer */}
+      {/* Mobile Sticky Footer */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 lg:hidden">
         <button 
           onClick={() => {
