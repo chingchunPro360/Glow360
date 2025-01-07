@@ -30,26 +30,22 @@ export default function BusinessProfile() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
-      if (window.innerWidth < 768) {
-        // 向下滾動超過 50px 時隱藏主 header
+         // 向下滾動超過 50px 時隱藏主 header
         if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
           setHideMainHeader(true);
         }
         // 向上滾動時顯示主 header
         else if (currentScrollY < lastScrollY.current) {
           setHideMainHeader(false);
-        }
-
+        }     
+      if (window.innerWidth < 768) {
         // 商家標題是否可見
         if (titleRef.current) {
           const titleRect = titleRef.current.getBoundingClientRect();
           setShowStickyHeader(titleRect.bottom <= 0);
         }
       } else {
-        setHideMainHeader(false);
-        setShowStickyHeader(false);
-        
+          
         if (titleRef.current) {
           const titleRect = titleRef.current.getBoundingClientRect();
           setIsBusinessTitleVisible(titleRect.bottom > 0);
