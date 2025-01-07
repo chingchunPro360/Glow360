@@ -14,6 +14,8 @@ import PromotionCard from '../components/profile/PromotionCard';
 export default function BusinessProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const titleRef = useRef(null);
+  const lastScrollY = useRef(0);
   
   const [isFavorite, setIsFavorite] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -22,30 +24,24 @@ export default function BusinessProfile() {
   const [showStickyHeader, setShowStickyHeader] = useState(false);
   const [hideMainHeader, setHideMainHeader] = useState(false);
   const [isBusinessTitleVisible, setIsBusinessTitleVisible] = useState(true);
-  
-  const titleRef = useRef(null);
-  const lastScrollY = useRef(0);
+
   const business = MOCK_BUSINESSES.find(b => b.id === Number(id));
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-         // 向下滾動超過 50px 時隱藏主 header
-        if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
-          setHideMainHeader(true);
-        }
-        // 向上滾動時顯示主 header
-        else if (currentScrollY < lastScrollY.current) {
-          setHideMainHeader(false);
-        }     
+      if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
+        setHideMainHeader(true);
+      }
+      else if (currentScrollY < lastScrollY.current) {
+        setHideMainHeader(false);
+      }     
       if (window.innerWidth < 768) {
-        // 商家標題是否可見
         if (titleRef.current) {
           const titleRect = titleRef.current.getBoundingClientRect();
           setShowStickyHeader(titleRect.bottom <= 0);
         }
       } else {
-          
         if (titleRef.current) {
           const titleRect = titleRef.current.getBoundingClientRect();
           setIsBusinessTitleVisible(titleRect.bottom > 0);
@@ -152,42 +148,42 @@ export default function BusinessProfile() {
           </div>
         </section>
 
-        {/* Photo Carousel */}
-        <section className="mb-6">
-          <PhotoCarousel photos={business.photos} />
-        </section>
-
         {/* Main Content */}
-        <div className="md:max-w-7xl md:mx-auto md:px-4">
+        <div className="md:max-w-7xl md:mx-auto md:px-4 md:py-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
             {/* Left Content */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Mobile Contact Info */}
-              <section className="lg:hidden bg-white">
+            <div className="lg:col-span-2 divide-y divide-gray-200 bg-white md:bg-transparent md:divide-y-0 md:space-y-6">
+              {/* Photo Section */}
+              <div className="md:bg-white md:rounded-lg overflow-hidden">
+                <PhotoCarousel photos={business.photos} />
+              </div>
+
+              {/* Contact Information */}
+              <div className="md:hidden">
                 <div className="px-6 py-6">
                   <h2 className="text-xl font-bold mb-6">Contact Information</h2>
                   <ContactCard business={business} />
                 </div>
-              </section>
+              </div>
 
-              {/* Mobile Business Hours */}
-              <section className="lg:hidden bg-white">
+              {/* Business Hours */}
+              <div className="md:hidden">
                 <div className="px-6 py-6">
                   <h2 className="text-xl font-bold mb-6">Business Hours</h2>
                   <BusinessHoursCard business={business} />
                 </div>
-              </section>
+              </div>
 
-              {/* Mobile Promotions */}
-              <section className="lg:hidden bg-white">
+              {/* Current Promotions */}
+              <div className="md:hidden">
                 <div className="px-6 py-6">
                   <h2 className="text-xl font-bold mb-6">Current Promotions</h2>
                   <PromotionCard businessId={business.id} />
                 </div>
-              </section>
+              </div>
 
               {/* Services */}
-              <section className="bg-white">
+              <section className="md:bg-white md:rounded-lg">
                 <div className="px-6 py-6">
                   <h2 className="text-xl font-bold mb-6">Services</h2>
                   <div className="space-y-4">
@@ -201,7 +197,7 @@ export default function BusinessProfile() {
               </section>
 
               {/* Team */}
-              <section className="bg-white">
+              <section className="md:bg-white md:rounded-lg">
                 <div className="px-6 py-6">
                   <h2 className="text-xl font-bold mb-6">Our Team</h2>
                   <StaffCarousel businessId={business.id} />
@@ -209,7 +205,7 @@ export default function BusinessProfile() {
               </section>
 
               {/* About */}
-              <section className="bg-white">
+              <section className="md:bg-white md:rounded-lg">
                 <div className="px-6 py-6">
                   <h2 className="text-xl font-bold mb-6">About Us</h2>
                   <p className="text-gray-600">
@@ -227,7 +223,7 @@ export default function BusinessProfile() {
               </section>
 
               {/* Reviews */}
-              <section className="bg-white">
+              <section className="md:bg-white md:rounded-lg">
                 <div className="px-6 py-6">
                   <ReviewSection business={business} />
                 </div>
