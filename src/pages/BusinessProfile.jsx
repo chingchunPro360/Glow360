@@ -20,8 +20,8 @@ export default function BusinessProfile() {
   const [showMap, setShowMap] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [showStickyHeader, setShowStickyHeader] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const [hideMainHeader, setHideMainHeader] = useState(false);
+  const [isBusinessTitleVisible, setIsBusinessTitleVisible] = useState(true);
   
   const titleRef = useRef(null);
   const business = MOCK_BUSINESSES.find(b => b.id === Number(id));
@@ -30,24 +30,29 @@ export default function BusinessProfile() {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       
-      // 控制主Header的顯示/隱藏
-      if (currentScrollY > lastScrollY) {
+      // 手機版邏輯
+      if (window.innerWidth < 768) {
         setHideMainHeader(true);
+        
+        if (titleRef.current) {
+          const titleRect = titleRef.current.getBoundingClientRect();
+          setShowStickyHeader(titleRect.bottom <= 0);
+        }
       } else {
-        setHideMainHeader(false);
-      }
-      setLastScrollY(currentScrollY);
-
-      // 控制商家名稱的sticky header
-      if (titleRef.current) {
-        const titleRect = titleRef.current.getBoundingClientRect();
-        setShowStickyHeader(titleRect.bottom <= (hideMainHeader ? 0 : 64));
+        // 電腦版邏輯
+        setHideMainHeader(true);
+        setShowStickyHeader(false);
+        
+        if (titleRef.current) {
+          const titleRect = titleRef.current.getBoundingClientRect();
+          setIsBusinessTitleVisible(titleRect.bottom > 0);
+        }
       }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   if (!business) {
     return (
@@ -66,10 +71,18 @@ export default function BusinessProfile() {
     );
   }
 
+  // 根據屏幕大小決定樣式
+  const mobileStyles = {
+    section: 'md:bg-white md:rounded-lg md:p-6 bg-white border-b border-gray-200 p-1 md:border-none',
+    sectionTitle: 'text-xl font-bold mb-4',
+    contentSpacing: 'space-y-1 md:space-y-6',
+    roundedCorners: 'rounded-[1px] md:rounded-lg'
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
-      {/* 主Header - 在手機版捲動時隱藏 */}
-      <div className={`fixed top-0 left-0 right-0 z-50 bg-white transform transition-transform duration-300 md:transform-none ${
+      {/* 主Header */}
+      <div className={`fixed top-0 left-0 right-0 z-50 bg-white transform transition-transform duration-300 ${
         hideMainHeader ? '-translate-y-full' : 'translate-y-0'
       }`}>
         <Header 
@@ -80,12 +93,10 @@ export default function BusinessProfile() {
         />
       </div>
 
-      {/* 商家名稱 Sticky Header */}
-      <div className={`fixed left-0 right-0 bg-white border-b transform ${
+      {/* 手機版 Sticky Header */}
+      <div className={`md:hidden fixed left-0 right-0 bg-white border-b transform ${
         showStickyHeader ? 'translate-y-0' : '-translate-y-full'
-      } transition-transform duration-300 z-40 shadow-sm ${
-        hideMainHeader ? 'top-0' : 'top-16'
-      }`}>
+      } transition-transform duration-300 z-40 shadow-sm top-0`}>
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex justify-between items-center">
             <div>
@@ -107,9 +118,9 @@ export default function BusinessProfile() {
         </div>
       </div>
 
-      <main className={`pt-16 transition-all duration-300 ${hideMainHeader ? 'md:pt-16' : 'md:pt-16'}`}>
+      <main>
         {/* 商家標題區塊 */}
-        <div className="border-b" ref={titleRef}>
+        <div className="border-b bg-white" ref={titleRef}>
           <div className="max-w-7xl mx-auto px-4 py-6">
             <div className="flex justify-between items-start">
               <div>
@@ -145,39 +156,42 @@ export default function BusinessProfile() {
         </div>
 
         {/* 主要內容區 */}
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="max-w-7xl mx-auto px-4 py-1 md:py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-1 md:gap-8">
             {/* 左側內容區 */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className={`lg:col-span-2 ${mobileStyles.contentSpacing}`}>
               {/* 照片輪播 */}
-              <PhotoCarousel photos={business.photos} />
-
-              {/* 手機版預約卡片 */}
-              <div className="lg:hidden">
-                <BookingCard business={business} />
+              <div className={mobileStyles.roundedCorners}>
+                <PhotoCarousel photos={business.photos} />
               </div>
 
               {/* 手機版聯絡資訊 */}
               <div className="lg:hidden">
-                <ContactCard business={business} />
+                <div className={mobileStyles.section}>
+                  <ContactCard business={business} />
+                </div>
               </div>
 
               {/* 手機版營業時間 */}
               <div className="lg:hidden">
-                <BusinessHoursCard business={business} />
+                <div className={mobileStyles.section}>
+                  <BusinessHoursCard business={business} />
+                </div>
               </div>
 
               {/* 手機版優惠資訊 */}
               <div className="lg:hidden">
-                <PromotionCard businessId={business.id} />
+                <div className={mobileStyles.section}>
+                  <PromotionCard businessId={business.id} />
+                </div>
               </div>
 
               {/* 服務項目 */}
-              <div className="bg-white rounded-lg p-6">
-                <h2 className="text-xl font-bold mb-4">Services</h2>
-                <div className="grid gap-4">
+              <div className={mobileStyles.section}>
+                <h2 className={mobileStyles.sectionTitle}>Services</h2>
+                <div className="grid gap-1 md:gap-4">
                   {business.services.map((service, index) => (
-                    <div key={index} className="p-4 border rounded">
+                    <div key={index} className="p-4 border rounded-[1px] md:rounded">
                       {service}
                     </div>
                   ))}
@@ -185,14 +199,14 @@ export default function BusinessProfile() {
               </div>
 
               {/* 團隊介紹 */}
-              <div className="bg-white rounded-lg p-6">
-                <h2 className="text-xl font-bold mb-4">Our Team</h2>
+              <div className={mobileStyles.section}>
+                <h2 className={mobileStyles.sectionTitle}>Our Team</h2>
                 <StaffCarousel businessId={business.id} />
               </div>
 
               {/* 關於我們 */}
-              <div className="bg-white rounded-lg p-6">
-                <h2 className="text-xl font-bold mb-4">About Us</h2>
+              <div className={mobileStyles.section}>
+                <h2 className={mobileStyles.sectionTitle}>About Us</h2>
                 <p className="text-gray-600">
                   {showFullDescription ? business.description : business.description.slice(0, 150)}
                   {business.description.length > 150 && (
@@ -207,15 +221,18 @@ export default function BusinessProfile() {
               </div>
 
               {/* 評價區塊 */}
-              <div className="bg-white rounded-lg p-6">
+              <div className={mobileStyles.section}>
                 <ReviewSection business={business} />
               </div>
             </div>
 
             {/* 桌面版右側邊欄 */}
             <div className="hidden lg:block lg:col-span-1">
-              <div className="sticky top-32 space-y-6">
-                <BookingCard business={business} />
+              <div className="sticky top-8 space-y-6">
+                <BookingCard 
+                  business={business} 
+                  isBusinessTitleVisible={isBusinessTitleVisible}
+                />
                 <ContactCard business={business} />
                 <BusinessHoursCard business={business} />
                 <PromotionCard businessId={business.id} />
@@ -229,7 +246,6 @@ export default function BusinessProfile() {
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 lg:hidden">
         <button 
           onClick={() => {
-            // 處理預約邏輯
             console.log('Booking...');
           }}
           className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700"
