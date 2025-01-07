@@ -22,8 +22,11 @@ export default function BusinessProfile() {
   const [showStickyHeader, setShowStickyHeader] = useState(false);
   
   const titleRef = useRef(null);
+  const sidebarRef = useRef(null);
+  const sidebarContainerRef = useRef(null);
   const business = MOCK_BUSINESSES.find(b => b.id === Number(id));
 
+  // 監聽捲動事件，控制 sticky header 的顯示
   useEffect(() => {
     const handleScroll = () => {
       if (titleRef.current) {
@@ -35,6 +38,14 @@ export default function BusinessProfile() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // 當 sticky header 顯示時，設置側邊欄寬度
+  useEffect(() => {
+    if (sidebarRef.current && sidebarContainerRef.current && showStickyHeader) {
+      const containerWidth = sidebarContainerRef.current.offsetWidth;
+      sidebarRef.current.style.width = `${containerWidth}px`;
+    }
+  }, [showStickyHeader]);
 
   if (!business) {
     return (
@@ -57,7 +68,7 @@ export default function BusinessProfile() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* 頂部導航列 */}
       <div className="sticky top-0 z-50">
         <Header 
           showMap={showMap}
@@ -67,7 +78,7 @@ export default function BusinessProfile() {
         />
       </div>
 
-      {/* Sticky Business Header */}
+      {/* 商家資訊 Sticky Header */}
       <div className={`fixed top-16 left-0 right-0 bg-white border-b transform ${
         showStickyHeader ? 'translate-y-0' : '-translate-y-full'
       } transition-transform duration-300 z-40 shadow-sm h-16`}>
@@ -108,7 +119,7 @@ export default function BusinessProfile() {
       </div>
 
       <main>
-        {/* Business Title Section */}
+        {/* 商家標題區塊 */}
         <div className="border-b" ref={titleRef}>
           <div className="max-w-7xl mx-auto px-4 py-6">
             <div className="flex justify-between items-start">
@@ -136,9 +147,7 @@ export default function BusinessProfile() {
                 >
                   <FaHeart className={isFavorite ? 'text-red-500' : 'text-gray-400'} />
                 </button>
-                <button 
-                  className="p-2 rounded-full hover:bg-gray-100"
-                >
+                <button className="p-2 rounded-full hover:bg-gray-100">
                   <FaShare className="text-gray-400" />
                 </button>
               </div>
@@ -146,15 +155,17 @@ export default function BusinessProfile() {
           </div>
         </div>
 
-        {/* Main Content */}
+        {/* 主要內容區 */}
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column */}
+            {/* 左側內容區 */}
             <div className="lg:col-span-2">
+              {/* 照片輪播 */}
               <section className="mb-8 rounded-lg overflow-hidden shadow-sm">
                 <PhotoCarousel photos={business.photos} />
               </section>
 
+              {/* 服務項目 */}
               <section className="bg-white rounded-lg shadow-sm p-6 mb-8">
                 <h2 className="text-2xl font-bold mb-4">Services</h2>
                 <div className="grid gap-4">
@@ -166,11 +177,13 @@ export default function BusinessProfile() {
                 </div>
               </section>
 
+              {/* 團隊介紹 */}
               <section className="bg-white rounded-lg shadow-sm p-6 mb-8">
                 <h2 className="text-2xl font-bold mb-4">Our Team</h2>
                 <StaffCarousel businessId={business.id} />
               </section>
 
+              {/* 關於我們 */}
               <section className="bg-white rounded-lg shadow-sm p-6 mb-8">
                 <h2 className="text-2xl font-bold mb-4">About Us</h2>
                 <p className="text-gray-600">
@@ -186,18 +199,37 @@ export default function BusinessProfile() {
                 </p>
               </section>
 
+              {/* 評價區塊 */}
               <section className="bg-white rounded-lg shadow-sm p-6">
                 <ReviewSection business={business} />
               </section>
             </div>
 
-            {/* Right Column (Sidebar) */}
+            {/* 右側邊欄 */}
             <div className="lg:col-span-1">
-              <div className="sticky top-[152px] space-y-6">
-                <BookingCard business={business} />
-                <ContactCard business={business} />
-                <BusinessHoursCard business={business} />
-                <PromotionCard businessId={business.id} />
+              {/* 側邊欄容器 - 用來維持寬度 */}
+              <div ref={sidebarContainerRef} className="relative">
+                {/* 側邊欄內容 - 根據捲動狀態改變定位 */}
+                <div 
+                  ref={sidebarRef}
+                  className={`transition-all duration-300 ${
+                    showStickyHeader ? 'fixed top-32' : 'relative'
+                  }`}
+                >
+                  {/* 預約卡片 */}
+                  <div className={`transition-all duration-300 ${
+                    showStickyHeader ? 'hidden' : 'block mb-6'
+                  }`}>
+                    <BookingCard business={business} />
+                  </div>
+                  
+                  {/* 其他資訊卡片 */}
+                  <div className="space-y-6">
+                    <ContactCard business={business} />
+                    <BusinessHoursCard business={business} />
+                    <PromotionCard businessId={business.id} />
+                  </div>
+                </div>
               </div>
             </div>
           </div>

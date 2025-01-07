@@ -13,14 +13,15 @@
   scrollbar-width: none;  /* Firefox */
 }
 
-/* Custom link styles */
-a {
-  text-decoration: none;
+/* Sidebar width constraints */
+@media (min-width: 1280px) {
+  .sidebar-container {
+    width: calc((80rem / 3) - 2rem) !important;
+  }
 }
 
-/* Smooth transitions */
-.transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+@media (max-width: 1279px) {
+  .sidebar-container {
+    width: calc((100vw - 2rem) / 3) !important;
+  }
 }
