@@ -129,7 +129,7 @@ export default function BusinessListings() {
                 ) : (
                   <BusinessCardGrid 
                     businesses={filteredBusinesses}
-                    scrollable={true}
+                    scrollable={false}
                   />
                 )}
               </div>
