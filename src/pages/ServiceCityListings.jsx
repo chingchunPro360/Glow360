@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -23,42 +23,15 @@ export default function ServiceCityListings() {
     openNow: false
   });
 
-  // 獲取當前城市的服務列表
-  const getCityServices = (cityName) => {
-    for (const country of Object.values(CITY_SERVICES)) {
-      if (country[cityName]) {
-        return country[cityName];
-      }
-    }
-    return [];
-  };
-
-  // 獲取提供特定服務的城市列表
-  const getServiceCities = (serviceName) => {
-    const cities = new Set();
-    Object.values(CITY_SERVICES).forEach(country => {
-      Object.entries(country).forEach(([cityName, services]) => {
-        if (services.includes(serviceName)) {
-          cities.add(cityName);
-        }
-      });
-    });
-    return Array.from(cities);
-  };
-
-  // 根據服務和城市篩選商家
   const filteredBusinesses = MOCK_BUSINESSES.filter(business => {
-    // 如果指定了城市，先篩選城市
     if (city && business.city !== city) {
       return false;
     }
 
-    // 如果指定了服務，檢查服務類別
     if (service && business.category !== service) {
       return false;
     }
 
-    // 應用其他篩選條件
     if (selectedFilters.serviceType.length > 0 && 
         !selectedFilters.serviceType.includes(business.category)) {
       return false;
@@ -80,13 +53,8 @@ export default function ServiceCityListings() {
     return true;
   });
 
-  // 獲取相關城市和服務
-  const relatedCities = service ? getServiceCities(service) : [];
-  const relatedServices = city ? getCityServices(city) : [];
-
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-white">
         <Header 
           showMap={showMap}
@@ -97,7 +65,6 @@ export default function ServiceCityListings() {
       </div>
       
       <main className="pt-16">
-        {/* Categories Section */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex overflow-x-auto gap-4 scrollbar-hide">
             {CATEGORIES.map((categoryName) => (
@@ -116,11 +83,9 @@ export default function ServiceCityListings() {
           </div>
         </div>
 
-        {/* Main Content */}
         <section className="py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex gap-8">
-              {/* Filter Sidebar */}
               {showFilters && (
                 <div className="w-64 flex-shrink-0">
                   <div className="sticky top-24">
@@ -132,9 +97,7 @@ export default function ServiceCityListings() {
                 </div>
               )}
 
-              {/* Business Listings or Map */}
               <div className="flex-1">
-                {/* Breadcrumb */}
                 <div className="flex items-center text-sm text-gray-600 mb-4">
                   <Link to="/" className="hover:text-blue-600 transition-colors">
                     Home
@@ -160,57 +123,16 @@ export default function ServiceCityListings() {
                   )}
                 </div>
 
-                {/* Title and Description */}
                 <div className="mb-8">
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                  <h1 className="text-2xl font-bold text-gray-900">
                     {service && city 
                       ? `${service} in ${city}`
                       : service
                         ? `${service} Services`
                         : `Beauty Services in ${city}`}
                   </h1>
-                  <p className="text-gray-600">
-                    {filteredBusinesses.length} businesses found
-                  </p>
                 </div>
 
-                {/* Related Cities or Services */}
-                {(relatedCities.length > 0 || relatedServices.length > 0) && (
-                  <div className="mb-6">
-                    <h2 className="text-lg font-semibold mb-3">
-                      {service ? 'Available in Cities' : 'Available Services'}
-                    </h2>
-                    <div className="flex flex-wrap gap-2">
-                      {service ? (
-                        // Show related cities for the service
-                        relatedCities.map(cityName => (
-                          <Link
-                            key={cityName}
-                            to={`/service/${service}/${cityName}`}
-                            className="px-3 py-1 bg-gray-100 rounded-full text-sm 
-                                     hover:bg-gray-200 transition-colors"
-                          >
-                            {cityName}
-                          </Link>
-                        ))
-                      ) : (
-                        // Show related services for the city
-                        relatedServices.map(serviceName => (
-                          <Link
-                            key={serviceName}
-                            to={`/service/${serviceName}/${city}`}
-                            className="px-3 py-1 bg-gray-100 rounded-full text-sm 
-                                     hover:bg-gray-200 transition-colors"
-                          >
-                            {serviceName}
-                          </Link>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Business Listings */}
                 {showMap ? (
                   <MapView 
                     businesses={filteredBusinesses}
@@ -225,7 +147,6 @@ export default function ServiceCityListings() {
                   />
                 )}
 
-                {/* No Results Message */}
                 {filteredBusinesses.length === 0 && (
                   <div className="text-center py-12">
                     <h3 className="text-lg font-medium text-gray-900 mb-2">
@@ -241,10 +162,7 @@ export default function ServiceCityListings() {
           </div>
         </section>
 
-        {/* Testimonials */}
         <Testimonials />
-
-        {/* Browse by City */}
         <ServiceCategories />
       </main>
 
