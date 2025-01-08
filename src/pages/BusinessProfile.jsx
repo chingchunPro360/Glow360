@@ -7,8 +7,6 @@ import PhotoCarousel from '../components/PhotoCarousel';
 import StaffCarousel from '../components/profile/StaffCarousel';
 import ReviewSection from '../components/profile/ReviewSection';
 import BookingCard from '../components/profile/BookingCard';
-import ContactCard from '../components/profile/ContactCard';
-import BusinessHoursCard from '../components/profile/BusinessHoursCard';
 import PromotionCard from '../components/profile/PromotionCard';
 
 export default function BusinessProfile() {
@@ -20,16 +18,17 @@ export default function BusinessProfile() {
   const [showMap, setShowMap] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [showMobileHeader, setShowMobileHeader] = useState(false);
+  const [isBusinessTitleVisible, setIsBusinessTitleVisible] = useState(true);
 
   const business = MOCK_BUSINESSES.find(b => b.id === Number(id));
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.innerWidth < 768) { // 僅在手機版執行
-        if (titleRef.current) {
-          const titleRect = titleRef.current.getBoundingClientRect();
-          setShowMobileHeader(titleRect.top < 0);
-        }
+      if (titleRef.current) {
+        const titleRect = titleRef.current.getBoundingClientRect();
+        const isTitleVisible = titleRect.top >= 0 && titleRect.bottom <= window.innerHeight;
+        setIsBusinessTitleVisible(isTitleVisible);
+        setShowMobileHeader(titleRect.top < 0);
       }
     };
 
@@ -63,10 +62,9 @@ export default function BusinessProfile() {
         setShowFilters={setShowFilters}
       />
 
-      {/* Mobile Sticky Header */}
       {showMobileHeader && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md md:hidden">
-          <div className="px-4 py-3">
+          <div className="mx-4">
             <h2 className="text-lg font-bold text-gray-900">{business.name}</h2>
             <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
               <span>{business.category}</span>
@@ -88,9 +86,8 @@ export default function BusinessProfile() {
 
       <main className={`${showMobileHeader ? 'mt-24' : ''} md:mt-0`}>
         <section className="bg-white">
-          <div className="md:max-w-7xl md:mx-auto px-6 md:px-4">
-            <div className="max-w-[calc(66.666667%-1rem)] md:py-6">
-              {/* Breadcrumb - 水平捲動 */}
+          <div className="md:max-w-7xl md:mx-auto md:px-4">
+            <div className="w-[calc(100%-2rem)] mx-4 md:w-[calc(66.666667%-1rem)] md:mx-0 md:py-6">
               <div className="overflow-x-auto scrollbar-hide mb-4">
                 <div className="flex items-center text-sm text-gray-600 whitespace-nowrap">
                   <Link to="/" className="hover:text-blue-600 transition-colors flex-shrink-0">
@@ -151,7 +148,7 @@ export default function BusinessProfile() {
           </div>
         </section>
 
-        <div className="md:max-w-7xl md:mx-auto px-6 md:px-4 md:py-6">
+        <div className="md:max-w-7xl md:mx-auto px-4 pt-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
             <div className="lg:col-span-2 divide-y divide-gray-200 bg-white md:bg-transparent md:divide-y-0 md:space-y-6">
               <div className="md:bg-white md:rounded-lg overflow-hidden">
@@ -203,19 +200,16 @@ export default function BusinessProfile() {
             </div>
 
             <div className="hidden lg:block">
-              <div className="sticky top-24 space-y-6">
-                <div className="bg-white rounded-lg">
-                  <BookingCard business={business} />
-                </div>
+              <div className={`sticky transition-[top] duration-300 ${
+                isBusinessTitleVisible ? 'top-[72px]' : 'top-6'
+              }`}>
                 <div className="bg-white rounded-lg p-6">
-                  <h3 className="text-lg font-semibold mb-6">Contact Information</h3>
-                  <ContactCard business={business} />
+                  <BookingCard 
+                    business={business} 
+                    isBusinessTitleVisible={isBusinessTitleVisible}
+                  />
                 </div>
-                <div className="bg-white rounded-lg p-6">
-                  <h3 className="text-lg font-semibold mb-6">Business Hours</h3>
-                  <BusinessHoursCard business={business} />
-                </div>
-                <div className="bg-white rounded-lg p-6">
+                <div className="mt-6 bg-white rounded-lg p-6">
                   <h3 className="text-lg font-semibold mb-6">Current Promotions</h3>
                   <PromotionCard businessId={business.id} />
                 </div>
