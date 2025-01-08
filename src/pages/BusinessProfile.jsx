@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { FaStar, FaMapMarkerAlt, FaHeart, FaShare } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { FaStar, FaMapMarkerAlt, FaHeart, FaShare, FaChevronRight } from 'react-icons/fa';
 import { MOCK_BUSINESSES } from '../data';
 import Header from '../components/Header';
 import PhotoCarousel from '../components/PhotoCarousel';
@@ -14,46 +14,12 @@ import PromotionCard from '../components/profile/PromotionCard';
 export default function BusinessProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const titleRef = useRef(null);
-  const lastScrollY = useRef(0);
-  
   const [isFavorite, setIsFavorite] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const [showStickyHeader, setShowStickyHeader] = useState(false);
-  const [hideMainHeader, setHideMainHeader] = useState(false);
-  const [isBusinessTitleVisible, setIsBusinessTitleVisible] = useState(true);
 
   const business = MOCK_BUSINESSES.find(b => b.id === Number(id));
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
-        setHideMainHeader(true);
-      }
-      else if (currentScrollY < lastScrollY.current) {
-        setHideMainHeader(false);
-      }     
-      if (window.innerWidth < 768) {
-        if (titleRef.current) {
-          const titleRect = titleRef.current.getBoundingClientRect();
-          setShowStickyHeader(titleRect.bottom <= 0);
-        }
-      } else {
-        if (titleRef.current) {
-          const titleRect = titleRef.current.getBoundingClientRect();
-          setIsBusinessTitleVisible(titleRect.bottom > 0);
-        }
-      }
-
-      lastScrollY.current = currentScrollY;
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   if (!business) {
     return (
@@ -73,11 +39,9 @@ export default function BusinessProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
-      {/* Main Header */}
-      <div className={`fixed top-0 left-0 right-0 z-50 bg-white transform transition-transform duration-300 ${
-        hideMainHeader ? '-translate-y-full' : 'translate-y-0'
-      }`}>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white">
         <Header 
           showMap={showMap}
           setShowMap={setShowMap}
@@ -86,38 +50,39 @@ export default function BusinessProfile() {
         />
       </div>
 
-      {/* Mobile Sticky Header */}
-      <div className={`md:hidden fixed left-0 right-0 bg-white border-b transform ${
-        showStickyHeader ? 'translate-y-0' : '-translate-y-full'
-      } transition-transform duration-300 z-40 shadow-sm top-0`}>
-        <div className="px-6 py-3">
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-lg font-bold text-gray-900">{business.name}</h2>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <FaStar className="text-yellow-400" />
-                <span>{business.rating}</span>
-                <span>•</span>
-                <span>{business.category}</span>
-              </div>
-            </div>
-            <button
-              onClick={() => setIsFavorite(!isFavorite)}
-              className="p-2 rounded-full hover:bg-gray-100"
-            >
-              <FaHeart className={isFavorite ? 'text-red-500' : 'text-gray-400'} />
-            </button>
-          </div>
-        </div>
-      </div>
-
       <main className="pt-16">
         {/* Business Title Section */}
-        <section className="bg-white" ref={titleRef}>
+        <section className="bg-white">
           <div className="px-6 py-6">
+            {/* Breadcrumb */}
+            <div className="flex items-center text-sm text-gray-600 mb-4">
+              <Link to="/" className="hover:text-blue-600 transition-colors">
+                Home
+              </Link>
+              <FaChevronRight className="w-3 h-3 mx-2 text-gray-400" />
+              <Link 
+                to={`/service/${business.category}`}
+                className="hover:text-blue-600 transition-colors"
+              >
+                {business.category}
+              </Link>
+              <FaChevronRight className="w-3 h-3 mx-2 text-gray-400" />
+              <Link 
+                to={`/service/${business.category}/${business.city}`}
+                className="hover:text-blue-600 transition-colors"
+              >
+                {business.city}
+              </Link>
+              <FaChevronRight className="w-3 h-3 mx-2 text-gray-400" />
+              <span className="text-gray-900">{business.name}</span>
+            </div>
+
+            {/* Business Title */}
             <div className="flex justify-between items-start">
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{business.name}</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                  {business.name}
+                </h1>
                 <div className="flex flex-wrap items-center gap-2 text-sm md:text-base text-gray-600">
                   <span>{business.category}</span>
                   <span>•</span>
@@ -156,30 +121,6 @@ export default function BusinessProfile() {
               {/* Photo Section */}
               <div className="md:bg-white md:rounded-lg overflow-hidden">
                 <PhotoCarousel photos={business.photos} />
-              </div>
-
-              {/* Contact Information */}
-              <div className="md:hidden">
-                <div className="px-6 py-6">
-                  <h2 className="text-xl font-bold mb-6">Contact Information</h2>
-                  <ContactCard business={business} />
-                </div>
-              </div>
-
-              {/* Business Hours */}
-              <div className="md:hidden">
-                <div className="px-6 py-6">
-                  <h2 className="text-xl font-bold mb-6">Business Hours</h2>
-                  <BusinessHoursCard business={business} />
-                </div>
-              </div>
-
-              {/* Current Promotions */}
-              <div className="md:hidden">
-                <div className="px-6 py-6">
-                  <h2 className="text-xl font-bold mb-6">Current Promotions</h2>
-                  <PromotionCard businessId={business.id} />
-                </div>
               </div>
 
               {/* Services */}
@@ -232,12 +173,9 @@ export default function BusinessProfile() {
 
             {/* Desktop Sidebar */}
             <div className="hidden lg:block">
-              <div className="sticky top-8 space-y-6">
+              <div className="sticky top-24 space-y-6">
                 <div className="bg-white rounded-lg">
-                  <BookingCard 
-                    business={business} 
-                    isBusinessTitleVisible={isBusinessTitleVisible}
-                  />
+                  <BookingCard business={business} />
                 </div>
                 <div className="bg-white rounded-lg p-6">
                   <h3 className="text-lg font-semibold mb-6">Contact Information</h3>

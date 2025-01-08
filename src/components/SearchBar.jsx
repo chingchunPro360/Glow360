@@ -1,96 +1,151 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaSearch, FaFilter, FaTimes } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import { CATEGORIES } from '../data';
+import { FaSearch, FaFilter, FaTimes, FaMapMarkerAlt } from 'react-icons/fa';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { CATEGORIES, MOCK_BUSINESSES } from '../data/mockBusinesses';
+import { CITY_SERVICES } from '../data/mockLocations';
 
-// 建議搜尋使用類別作為基礎
-const SUGGESTED_SERVICES = CATEGORIES.slice(0, 6);
+// 獲取所有城市及其服務
+const getCityServiceMap = () => {
+  const cityMap = new Map();
+  
+  Object.values(CITY_SERVICES).forEach(country => {
+    Object.entries(country).forEach(([city, services]) => {
+      // 檢查該城市是否有實際的商家
+      const hasBusinesses = MOCK_BUSINESSES.some(business => business.city === city);
+      if (hasBusinesses) {
+        cityMap.set(city, services);
+      }
+    });
+  });
+  
+  return cityMap;
+};
+
+// 獲取服務提供的城市
+const getServiceCities = (service) => {
+  const cities = new Set();
+  MOCK_BUSINESSES.forEach(business => {
+    if (business.category === service) {
+      cities.add(business.city);
+    }
+  });
+  return Array.from(cities);
+};
 
 export default function SearchBar({ showFilters, setShowFilters }) {
   const [query, setQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [recentSearches, setRecentSearches] = useState([]);
   const inputRef = useRef(null);
   const suggestionsRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // 根據輸入過濾建議
-  const filteredSuggestions = SUGGESTED_SERVICES.filter(service =>
-    service.toLowerCase().includes(query.toLowerCase())
-  );
+  // 從 localStorage 讀取最近搜尋
+  useEffect(() => {
+    const saved = localStorage.getItem('recentSearches');
+    if (saved) {
+      setRecentSearches(JSON.parse(saved));
+    }
+  }, []);
 
-  const handleSearch = (searchQuery) => {
-    navigate(`/listings?search=${encodeURIComponent(searchQuery)}`);
+  // 儲存最近搜尋
+  const saveRecentSearch = (searchTerm, type) => {
+    const newSearch = { term: searchTerm, type, timestamp: Date.now() };
+    const updated = [newSearch, ...recentSearches.filter(s => 
+      s.term !== searchTerm
+    )].slice(0, 5);
+    
+    setRecentSearches(updated);
+    localStorage.setItem('recentSearches', JSON.stringify(updated));
   };
 
-  const handleClear = (e) => {
-    e.preventDefault();
-    setQuery('');
+  // 獲取搜尋建議
+  const getSuggestions = (searchQuery) => {
+    const cityServiceMap = getCityServiceMap();
+    const lowercaseQuery = searchQuery.toLowerCase();
+    
+    // 服務建議
+    const serviceMatches = CATEGORIES.filter(service =>
+      service.toLowerCase().includes(lowercaseQuery)
+    ).map(service => ({
+      type: 'service',
+      value: service,
+      cities: getServiceCities(service)
+    }));
+
+    // 城市建議
+    const cityMatches = Array.from(cityServiceMap.entries())
+      .filter(([city]) => city.toLowerCase().includes(lowercaseQuery))
+      .map(([city, services]) => ({
+        type: 'city',
+        value: city,
+        services: services
+      }));
+
+    // 商家建議
+    const businessMatches = MOCK_BUSINESSES
+      .filter(business => 
+        business.name.toLowerCase().includes(lowercaseQuery) ||
+        business.category.toLowerCase().includes(lowercaseQuery)
+      )
+      .map(business => ({
+        type: 'business',
+        value: business.name,
+        category: business.category,
+        city: business.city,
+        id: business.id
+      }));
+
+    return {
+      services: serviceMatches.slice(0, 3),
+      cities: cityMatches.slice(0, 3),
+      businesses: businessMatches.slice(0, 3)
+    };
+  };
+
+  const handleSearch = (suggestion) => {
+    switch (suggestion.type) {
+      case 'service':
+        saveRecentSearch(suggestion.value, 'service');
+        navigate(`/service/${encodeURIComponent(suggestion.value)}`);
+        break;
+      case 'city':
+        saveRecentSearch(suggestion.value, 'city');
+        navigate(`/listings?city=${encodeURIComponent(suggestion.value)}`);
+        break;
+      case 'business':
+        saveRecentSearch(suggestion.value, 'business');
+        navigate(`/business/${suggestion.id}`);
+        break;
+      default:
+        if (query.trim()) {
+          navigate(`/listings?search=${encodeURIComponent(query.trim())}`);
+        }
+    }
     setShowSuggestions(false);
-    setSelectedIndex(-1);
-    inputRef.current?.focus();
+    setQuery('');
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (selectedIndex >= 0 && selectedIndex < filteredSuggestions.length) {
-      const selectedService = filteredSuggestions[selectedIndex];
-      handleSearch(selectedService);
-      setQuery(selectedService);
-    } else if (query.trim()) {
-      handleSearch(query.trim());
-    }
-    setShowSuggestions(false);
-  };
+    if (!query.trim()) return;
 
-  const handleKeyDown = (e) => {
-    if (!showSuggestions) return;
-
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        setSelectedIndex(prev => 
-          prev < filteredSuggestions.length - 1 ? prev + 1 : prev
-        );
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        setSelectedIndex(prev => prev > 0 ? prev - 1 : prev);
-        break;
-      case 'Enter':
-        e.preventDefault();
-        if (selectedIndex >= 0) {
-          const selectedService = filteredSuggestions[selectedIndex];
-          setQuery(selectedService);
-          handleSearch(selectedService);
-          setShowSuggestions(false);
-          setSelectedIndex(-1);
-        } else if (query.trim()) {
-          handleSearch(query.trim());
-          setShowSuggestions(false);
-        }
-        break;
-      case 'Escape':
-        setShowSuggestions(false);
-        setSelectedIndex(-1);
-        break;
+    const suggestions = getSuggestions(query);
+    if (suggestions.services.length > 0) {
+      handleSearch(suggestions.services[0]);
+    } else if (suggestions.cities.length > 0) {
+      handleSearch(suggestions.cities[0]);
+    } else if (suggestions.businesses.length > 0) {
+      handleSearch(suggestions.businesses[0]);
+    } else {
+      handleSearch({ type: 'search', value: query });
     }
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target) &&
-          !inputRef.current.contains(event.target)) {
-        setShowSuggestions(false);
-        setSelectedIndex(-1);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  const { services, cities, businesses } = getSuggestions(query);
+  const hasResults = services.length > 0 || cities.length > 0 || businesses.length > 0;
 
   return (
     <div className="relative w-full max-w-[640px]">
@@ -104,7 +159,7 @@ export default function SearchBar({ showFilters, setShowFilters }) {
             type="text"
             className="w-full h-12 px-4 py-2 pl-10 pr-24 rounded-full border border-gray-300 
                      focus:outline-none focus:ring-2 focus:ring-blue-500 text-base md:text-lg"
-            placeholder="Search services or locations..."
+            placeholder="Search services, locations, or businesses..."
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
@@ -112,13 +167,17 @@ export default function SearchBar({ showFilters, setShowFilters }) {
               setSelectedIndex(-1);
             }}
             onFocus={() => setShowSuggestions(true)}
-            onKeyDown={handleKeyDown}
           />
           <div className="absolute right-3 flex items-center space-x-2">
             {query && (
               <button
                 type="button"
-                onClick={handleClear}
+                onClick={() => {
+                  setQuery('');
+                  setShowSuggestions(false);
+                  setSelectedIndex(-1);
+                  inputRef.current?.focus();
+                }}
                 className="p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100"
                 aria-label="Clear search"
               >
@@ -144,34 +203,132 @@ export default function SearchBar({ showFilters, setShowFilters }) {
       </form>
 
       {/* Suggestions Dropdown */}
-      {showSuggestions && filteredSuggestions.length > 0 && (
+      {showSuggestions && (query.length > 0 || recentSearches.length > 0) && (
         <div 
           ref={suggestionsRef}
           className="absolute w-full mt-2 bg-white rounded-lg shadow-lg border border-gray-200 
-                   overflow-hidden z-50"
+                   overflow-hidden z-50 max-h-[80vh] overflow-y-auto"
         >
-          {filteredSuggestions.map((suggestion, index) => (
-            <div
-              key={suggestion}
-              className={`px-4 py-3 cursor-pointer ${
-                index === selectedIndex
-                  ? 'bg-blue-50 text-blue-700'
-                  : 'hover:bg-gray-50'
-              }`}
-              onClick={() => {
-                setQuery(suggestion);
-                handleSearch(suggestion);
-                setShowSuggestions(false);
-                setSelectedIndex(-1);
-              }}
-              onMouseEnter={() => setSelectedIndex(index)}
-            >
-              <div className="flex items-center">
-                <FaSearch className="h-4 w-4 text-gray-400 mr-2" />
-                {suggestion}
+          {/* Recent Searches */}
+          {query.length === 0 && recentSearches.length > 0 && (
+            <div className="border-b border-gray-100">
+              <div className="px-4 py-2 text-sm font-medium text-gray-500 bg-gray-50">
+                Recent Searches
               </div>
+              {recentSearches.map((search, index) => (
+                <div
+                  key={`${search.term}-${search.timestamp}`}
+                  className="px-4 py-3 cursor-pointer hover:bg-gray-50 flex items-center justify-between"
+                  onClick={() => handleSearch({ 
+                    type: search.type, 
+                    value: search.term,
+                    id: search.id 
+                  })}
+                >
+                  <div className="flex items-center">
+                    <FaSearch className="h-4 w-4 text-gray-400 mr-2" />
+                    <span>{search.term}</span>
+                  </div>
+                  <span className="text-sm text-gray-400">
+                    {search.type}
+                  </span>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
+
+          {query.length > 0 && (
+            <>
+              {/* Services */}
+              {services.length > 0 && (
+                <div className="border-b border-gray-100">
+                  <div className="px-4 py-2 text-sm font-medium text-gray-500 bg-gray-50">
+                    Services
+                  </div>
+                  {services.map((service, index) => (
+                    <div
+                      key={service.value}
+                      className="px-4 py-3 cursor-pointer hover:bg-gray-50"
+                      onClick={() => handleSearch(service)}
+                    >
+                      <div className="flex items-center">
+                        <FaSearch className="h-4 w-4 text-gray-400 mr-2" />
+                        <div>
+                          <div>{service.value}</div>
+                          {service.cities.length > 0 && (
+                            <div className="text-sm text-gray-500">
+                              Available in {service.cities.join(', ')}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Cities */}
+              {cities.length > 0 && (
+                <div className="border-b border-gray-100">
+                  <div className="px-4 py-2 text-sm font-medium text-gray-500 bg-gray-50">
+                    Cities
+                  </div>
+                  {cities.map((city, index) => (
+                    <div
+                      key={city.value}
+                      className="px-4 py-3 cursor-pointer hover:bg-gray-50"
+                      onClick={() => handleSearch(city)}
+                    >
+                      <div className="flex items-center">
+                        <FaMapMarkerAlt className="h-4 w-4 text-gray-400 mr-2" />
+                        <div>
+                          <div>{city.value}</div>
+                          {city.services.length > 0 && (
+                            <div className="text-sm text-gray-500">
+                              {city.services.length} services available
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Businesses */}
+              {businesses.length > 0 && (
+                <div>
+                  <div className="px-4 py-2 text-sm font-medium text-gray-500 bg-gray-50">
+                    Businesses
+                  </div>
+                  {businesses.map((business, index) => (
+                    <div
+                      key={business.id}
+                      className="px-4 py-3 cursor-pointer hover:bg-gray-50"
+                      onClick={() => handleSearch(business)}
+                    >
+                      <div className="flex items-center">
+                        <FaSearch className="h-4 w-4 text-gray-400 mr-2" />
+                        <div>
+                          <div>{business.value}</div>
+                          <div className="text-sm text-gray-500">
+                            {business.category} • {business.city}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* No Results */}
+              {!hasResults && (
+                <div className="px-4 py-3 text-gray-500 text-center">
+                  No results found for "{query}"
+                </div>
+              )}
+            </>
+          )}
         </div>
       )}
     </div>

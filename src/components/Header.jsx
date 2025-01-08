@@ -6,8 +6,8 @@ import SearchBar from './SearchBar';
 export default function Header({ showMap, setShowMap, showFilters, setShowFilters }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const isListingsPage = location.pathname === '/listings';
   const [showSearch, setShowSearch] = useState(true);
+  const isListingsPage = location.pathname === '/listings';
 
   const handleSearch = (query) => {
     navigate(`/listings?search=${encodeURIComponent(query)}`);

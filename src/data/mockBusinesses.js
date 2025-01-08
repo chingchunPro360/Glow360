@@ -34,8 +34,9 @@ export const CATEGORIES = [
   'Threading'
 ];
 
+// 新增城市相關資料
 export const MOCK_BUSINESSES = [
-  // Hair Salon Category
+  // New York Businesses
   {
     id: 1,
     name: "Elite Hair Studio",
@@ -49,9 +50,16 @@ export const MOCK_BUSINESSES = [
     ],
     rating: 4.8,
     reviewCount: 128,
-    description: "Luxury hair salon offering premium services with expert stylists and a serene atmosphere. Our team of experienced professionals is dedicated to helping you achieve your perfect look.",
+    description: "Luxury hair salon offering premium services with expert stylists and a serene atmosphere.",
     category: "Hair Salon",
-    location: "123 Main St, Downtown",
+    country: "United States",
+    city: "New York",
+    neighborhood: "Manhattan",
+    location: "123 5th Ave, Manhattan, New York",
+    coordinates: {
+      latitude: 40.7829,
+      longitude: -73.9654
+    },
     price: "$$",
     isOpen: true,
     distance: "0.8 mi",
@@ -84,6 +92,7 @@ export const MOCK_BUSINESSES = [
       sunday: "Closed"
     }
   },
+  // Los Angeles Businesses
   {
     id: 2,
     name: "Luxe Hair Lounge",
@@ -96,9 +105,16 @@ export const MOCK_BUSINESSES = [
     ],
     rating: 4.7,
     reviewCount: 156,
-    description: "Experience luxury hair care in our modern, upscale salon. We specialize in creating personalized looks that enhance your natural beauty.",
-    category: "Hair Salon",
-    location: "456 Fashion Ave, Midtown",
+    description: "Experience luxury hair care in our modern, upscale salon.",
+    category: "Hair Coloring",
+    country: "United States",
+    city: "Los Angeles",
+    neighborhood: "Beverly Hills",
+    location: "456 Rodeo Dr, Beverly Hills, Los Angeles",
+    coordinates: {
+      latitude: 34.0736,
+      longitude: -118.4004
+    },
     price: "$$$",
     isOpen: true,
     distance: "1.2 mi",
@@ -129,6 +145,7 @@ export const MOCK_BUSINESSES = [
       sunday: "11:00 AM - 5:00 PM"
     }
   },
+  // Chicago Businesses
   {
     id: 3,
     name: "Style & Grace Salon",
@@ -136,15 +153,20 @@ export const MOCK_BUSINESSES = [
     photos: [
       "https://images.unsplash.com/photo-1595475884562-073c30d45670?auto=format&fit=crop&w=1200&h=675",
       "https://images.unsplash.com/photo-1597248881519-db089d3744a5?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?auto=format&fit=crop&w=1200&h=675"
+      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=1200&h=675"
     ],
     rating: 4.9,
     reviewCount: 203,
-    description: "Where style meets sophistication. Our expert stylists create stunning looks tailored to your personality and lifestyle.",
-    category: "Hair Salon",
-    location: "789 Beauty Blvd, Westside",
+    description: "Where style meets sophistication. Expert stylists create stunning looks.",
+    category: "Hair Cut",
+    country: "United States",
+    city: "Chicago",
+    neighborhood: "River North",
+    location: "789 N Michigan Ave, Chicago",
+    coordinates: {
+      latitude: 41.8781,
+      longitude: -87.6298
+    },
     price: "$$",
     isOpen: true,
     distance: "1.5 mi",
@@ -175,22 +197,27 @@ export const MOCK_BUSINESSES = [
       sunday: "Closed"
     }
   },
-  // More Hair Salons...
+  // Miami Businesses
   {
     id: 4,
     name: "Chic & Shine",
     image: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=600&h=400",
     photos: [
       "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?auto=format&fit=crop&w=1200&h=675"
+      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=1200&h=675"
     ],
     rating: 4.6,
     reviewCount: 167,
-    description: "Contemporary salon focusing on modern techniques and trends. We help you express your unique style through your hair.",
-    category: "Hair Salon",
-    location: "321 Modern Ave, Eastside",
+    description: "Contemporary salon focusing on modern techniques and trends.",
+    category: "Hair Extensions",
+    country: "United States",
+    city: "Miami",
+    neighborhood: "South Beach",
+    location: "321 Ocean Drive, Miami Beach",
+    coordinates: {
+      latitude: 25.7617,
+      longitude: -80.1918
+    },
     price: "$$",
     isOpen: true,
     distance: "2.1 mi",
@@ -221,23 +248,27 @@ export const MOCK_BUSINESSES = [
       sunday: "Closed"
     }
   },
-  // Barbershop Category
+  // San Francisco Businesses
   {
     id: 5,
     name: "Classic Cuts Barbershop",
     image: "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=600&h=400",
     photos: [
       "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1599351431202-881b291de4c5?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1596728325488-58c87691e9af?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1592647420148-bfcc177e2117?auto=format&fit=crop&w=1200&h=675"
+      "https://images.unsplash.com/photo-1599351431202-881b291de4c5?auto=format&fit=crop&w=1200&h=675"
     ],
     rating: 4.9,
     reviewCount: 245,
-    description: "Traditional barbershop offering classic cuts and hot towel shaves in a vintage atmosphere. Experience the art of traditional grooming.",
+    description: "Traditional barbershop offering classic cuts and hot towel shaves.",
     category: "Barbershop",
-    location: "567 Vintage Row, Downtown",
+    country: "United States",
+    city: "San Francisco",
+    neighborhood: "Financial District",
+    location: "567 Market St, San Francisco",
+    coordinates: {
+      latitude: 37.7749,
+      longitude: -122.4194
+    },
     price: "$$",
     isOpen: true,
     distance: "0.5 mi",
@@ -266,143 +297,6 @@ export const MOCK_BUSINESSES = [
       friday: "8:00 AM - 8:00 PM",
       saturday: "7:00 AM - 6:00 PM",
       sunday: "9:00 AM - 3:00 PM"
-    }
-  },
-  {
-    id: 6,
-    name: "Modern Man Barbers",
-    image: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=600&h=400",
-    photos: [
-      "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1599351431202-881b291de4c5?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1592647420148-bfcc177e2117?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1596728325488-58c87691e9af?auto=format&fit=crop&w=1200&h=675"
-    ],
-    rating: 4.8,
-    reviewCount: 189,
-    description: "Contemporary barbershop combining traditional techniques with modern style. Perfect for the fashion-forward gentleman.",
-    category: "Barbershop",
-    location: "890 Urban St, Midtown",
-    price: "$$$",
-    isOpen: true,
-    distance: "1.8 mi",
-    services: [
-      "Modern Cuts",
-      "Precision Fades",
-      "Beard Styling",
-      "Color Services",
-      "Scalp Treatments",
-      "Grooming Consultations"
-    ],
-    contact: {
-      phone: "678-901-2345",
-      email: "hello@modernman.com",
-      website: "www.modernman.com",
-      social: {
-        instagram: "modernmanbarbers",
-        facebook: "ModernManBarbers"
-      }
-    },
-    businessHours: {
-      monday: "9:00 AM - 8:00 PM",
-      tuesday: "9:00 AM - 8:00 PM",
-      wednesday: "9:00 AM - 8:00 PM",
-      thursday: "9:00 AM - 9:00 PM",
-      friday: "9:00 AM - 9:00 PM",
-      saturday: "8:00 AM - 7:00 PM",
-      sunday: "10:00 AM - 4:00 PM"
-    }
-  },
-  // Hair Coloring Category
-  {
-    id: 7,
-    name: "Color Me Beautiful",
-    image: "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=600&h=400",
-    photos: [
-      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1595475884562-073c30d45670?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1597248881519-db089d3744a5?auto=format&fit=crop&w=1200&h=675"
-    ],
-    rating: 4.9,
-    reviewCount: 276,
-    description: "Specializing in creative hair coloring and innovative techniques. Our color specialists create stunning, personalized looks.",
-    category: "Hair Coloring",
-    location: "123 Rainbow Ave, Artsy District",
-    price: "$$$",
-    isOpen: true,
-    distance: "1.3 mi",
-    services: [
-      "Creative Color",
-      "Balayage",
-      "Highlights",
-      "Color Correction",
-      "Fashion Colors",
-      "Color Maintenance"
-    ],
-    contact: {
-      phone: "789-012-3456",
-      email: "info@colormebeautiful.com",
-      website: "www.colormebeautiful.com",
-      social: {
-        instagram: "colormebeautiful",
-        facebook: "ColorMeBeautifulSalon"
-      }
-    },
-    businessHours: {
-      monday: "10:00 AM - 7:00 PM",
-      tuesday: "10:00 AM - 7:00 PM",
-      wednesday: "10:00 AM - 8:00 PM",
-      thursday: "10:00 AM - 8:00 PM",
-      friday: "10:00 AM - 7:00 PM",
-      saturday: "9:00 AM - 6:00 PM",
-      sunday: "Closed"
-    }
-  },
-  {
-    id: 8,
-    name: "Spectrum Hair Studio",
-    image: "https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&w=600&h=400",
-    photos: [
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=1200&h=675",
-      "https://images.unsplash.com/photo-1595475884562-073c30d45670?auto=format&fit=crop&w=1200&h=675"
-    ],
-    rating: 4.7,
-    reviewCount: 198,
-    description: "Innovative color studio specializing in vibrant, long-lasting hair color. We create head-turning looks that express your personality.",
-    category: "Hair Coloring",
-    location: "456 Vibrant St, Fashion District",
-    price: "$$",
-    isOpen: true,
-    distance: "2.4 mi",
-    services: [
-      "Custom Color",
-      "Ombre",
-      "Highlights",
-      "Lowlights",
-      "Pastel Colors",
-      "Color Touch-ups"
-    ],
-    contact: {
-      phone: "890-123-4567",
-      email: "hello@spectrumhair.com",
-      website: "www.spectrumhair.com",
-      social: {
-        instagram: "spectrumhair",
-        facebook: "SpectrumHairStudio"
-      }
-    },
-    businessHours: {
-      monday: "9:00 AM - 7:00 PM",
-      tuesday: "9:00 AM - 7:00 PM",
-      wednesday: "9:00 AM - 8:00 PM",
-      thursday: "9:00 AM - 8:00 PM",
-      friday: "9:00 AM - 6:00 PM",
-      saturday: "8:00 AM - 5:00 PM",
-      sunday: "Closed"
     }
   }
 ];
