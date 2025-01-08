@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { FaChevronRight } from 'react-icons/fa';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -8,10 +8,11 @@ import FilterSidebar from '../components/listing/FilterSidebar';
 import MapView from '../components/listing/MapView';
 import ServiceCategories from '../components/SearchCategories';
 import Testimonials from '../components/listing/Testimonials';
-import { MOCK_BUSINESSES, CATEGORIES } from '../data/mockBusinesses';
+import { MOCK_BUSINESSES, CATEGORIES } from '../data/mockBusinesses';  // 添加 MOCK_BUSINESSES 導入
 
-export default function BusinessListings() {
-  const [searchParams] = useSearchParams();
+const BusinessListings = () => {
+  // 使用 useParams 替代 useSearchParams
+  const { category, city, district } = useParams();
   const [showMap, setShowMap] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState({
@@ -21,11 +22,6 @@ export default function BusinessListings() {
     location: '',
     openNow: false
   });
-
-  // 從 URL 參數中獲取搜尋條件
-  const category = searchParams.get('category');
-  const city = searchParams.get('city');
-  const searchQuery = searchParams.get('search');
 
   // 當類別改變時更新過濾器
   useEffect(() => {
@@ -37,69 +33,57 @@ export default function BusinessListings() {
     }
   }, [category]);
 
+  // 構建麵包屑數據
+  const breadcrumbItems = React.useMemo(() => {
+    const items = [];
+    
+    if (category) {
+      items.push({
+        label: category,
+        path: `/${category}`
+      });
+    }
+    
+    if (city) {
+      items.push({
+        label: city,
+        path: `/${category}/${city}`
+      });
+    }
+    
+    if (district) {
+      items.push({
+        label: district,
+        path: `/${category}/${city}/${district}`
+      });
+    }
+    
+    return items;
+  }, [category, city, district]);
+
   // 過濾商家列表
-  const filteredBusinesses = MOCK_BUSINESSES.filter(business => {
-    // 檢查城市
-    if (city && business.city !== city) {
-      return false;
-    }
-    // 檢查服務類型
-    if (selectedFilters.serviceType.length > 0 && 
-        !selectedFilters.serviceType.includes(business.category)) {
-      return false;
-    }
-    // 檢查營業狀態
-    if (selectedFilters.openNow && !business.isOpen) {
-      return false;
-    }
-    // 檢查價格範圍
-    if (selectedFilters.priceRange.length > 0 && 
-        !selectedFilters.priceRange.includes(business.price)) {
-      return false;
-    }
-    // 檢查評分
-    if (selectedFilters.rating && business.rating < selectedFilters.rating) {
-      return false;
-    }
-    return true;
-  });
+  const filteredBusinesses = React.useMemo(() => {
+    return MOCK_BUSINESSES.filter(business => {
+      if (category && business.category !== category) return false;
+      if (city && business.city !== city) return false;
+      if (district && business.district !== district) return false;
+      if (selectedFilters.serviceType.length > 0 && 
+          !selectedFilters.serviceType.includes(business.category)) return false;
+      if (selectedFilters.openNow && !business.isOpen) return false;
+      if (selectedFilters.priceRange.length > 0 && 
+          !selectedFilters.priceRange.includes(business.price)) return false;
+      if (selectedFilters.rating && business.rating < selectedFilters.rating) return false;
+      return true;
+    });
+  }, [category, city, district, selectedFilters]);
 
   // 生成頁面標題
   const getPageTitle = () => {
-    if (searchQuery) return `Search results for "${searchQuery}"`;
+    if (category && city && district) return `${category} in ${city} - ${district}`;
     if (category && city) return `${category} in ${city}`;
     if (category) return category;
     if (city) return `Beauty Services in ${city}`;
     return 'All Beauty Services';
-  };
-
-  // 渲染麵包屑導航
-  const renderBreadcrumb = () => {
-    return (
-      <div className="flex items-center text-sm text-gray-600 mb-4">
-        <Link to="/" className="hover:text-blue-600 transition-colors">
-          Home
-        </Link>
-        {category && (
-          <>
-            <FaChevronRight className="mx-2 text-gray-400" />
-            <span className="text-gray-900">{category}</span>
-          </>
-        )}
-        {city && (
-          <>
-            <FaChevronRight className="mx-2 text-gray-400" />
-            <span className="text-gray-900">{city}</span>
-          </>
-        )}
-        {searchQuery && !category && !city && (
-          <>
-            <FaChevronRight className="mx-2 text-gray-400" />
-            <span className="text-gray-900">Search Results</span>
-          </>
-        )}
-      </div>
-    );
   };
 
   return (
@@ -118,7 +102,7 @@ export default function BusinessListings() {
             {CATEGORIES.map((categoryName) => (
               <Link
                 key={categoryName}
-                to={`/listings?category=${encodeURIComponent(categoryName)}`}
+                to={`/${encodeURIComponent(categoryName)}`}
                 className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
                   category === categoryName
                     ? 'bg-blue-600 text-white'
@@ -150,7 +134,23 @@ export default function BusinessListings() {
               {/* 商家列表區域 */}
               <div className="flex-1">
                 {/* 麵包屑導航 */}
-                {renderBreadcrumb()}
+                <div className="flex items-center text-sm text-gray-600 mb-4">
+                  <Link to="/" className="hover:text-blue-600 transition-colors">
+                    Home
+                  </Link>
+                  {breadcrumbItems.map((item, index) => (
+                    <React.Fragment key={item.path}>
+                      <FaChevronRight className="mx-2 text-gray-400" />
+                      {index === breadcrumbItems.length - 1 ? (
+                        <span className="text-gray-900">{item.label}</span>
+                      ) : (
+                        <Link to={item.path} className="hover:text-blue-600 transition-colors">
+                          {item.label}
+                        </Link>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
 
                 {/* 頁面標題 */}
                 <h1 className="text-2xl font-bold text-gray-900 mb-6">
@@ -196,4 +196,6 @@ export default function BusinessListings() {
       <Footer />
     </div>
   );
-}
+};
+
+export default BusinessListings;

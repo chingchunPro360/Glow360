@@ -43,14 +43,36 @@ const BusinessProfile = () => {
         <div className="max-w-7xl mx-auto px-4 py-16 text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Business not found</h1>
           <button 
-            onClick={() => navigate('/listings')}
+            onClick={() => navigate('/')}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
-            Back to Listings
+            Back to Home
           </button>
         </div>
       </div>
     );
+  }
+
+  // 構建麵包屑路徑
+  const breadcrumbItems = [
+    {
+      label: business.category,
+      path: `/${encodeURIComponent(business.category)}`
+    }
+  ];
+
+  if (business.city) {
+    breadcrumbItems.push({
+      label: business.city,
+      path: `/${encodeURIComponent(business.category)}/${encodeURIComponent(business.city)}`
+    });
+  }
+
+  if (business.district) {
+    breadcrumbItems.push({
+      label: business.district,
+      path: `/${encodeURIComponent(business.category)}/${encodeURIComponent(business.city)}/${encodeURIComponent(business.district)}`
+    });
   }
 
   return (
@@ -88,30 +110,29 @@ const BusinessProfile = () => {
         <section className="bg-white">
           <div className="md:max-w-7xl md:mx-auto md:px-4">
             <div className="w-[calc(100%-2rem)] mx-4 md:w-[calc(66.666667%-1rem)] md:mx-0 md:py-6">
+              {/* Breadcrumb */}
               <div className="overflow-x-auto scrollbar-hide mb-4">
                 <div className="flex items-center text-sm text-gray-600 whitespace-nowrap">
                   <Link to="/" className="hover:text-blue-600 transition-colors flex-shrink-0">
                     Home
                   </Link>
-                  <FaChevronRight className="w-3 h-3 mx-2 text-gray-400 flex-shrink-0" />
-                  <Link 
-                    to={`/listings?category=${encodeURIComponent(business.category)}`}
-                    className="hover:text-blue-600 transition-colors flex-shrink-0"
-                  >
-                    {business.category}
-                  </Link>
-                  <FaChevronRight className="w-3 h-3 mx-2 text-gray-400 flex-shrink-0" />
-                  <Link 
-                    to={`/listings?category=${encodeURIComponent(business.category)}&city=${encodeURIComponent(business.city)}`}
-                    className="hover:text-blue-600 transition-colors flex-shrink-0"
-                  >
-                    {business.city}
-                  </Link>
+                  {breadcrumbItems.map((item, index) => (
+                    <React.Fragment key={item.path}>
+                      <FaChevronRight className="w-3 h-3 mx-2 text-gray-400 flex-shrink-0" />
+                      <Link 
+                        to={item.path}
+                        className="hover:text-blue-600 transition-colors flex-shrink-0"
+                      >
+                        {item.label}
+                      </Link>
+                    </React.Fragment>
+                  ))}
                   <FaChevronRight className="w-3 h-3 mx-2 text-gray-400 flex-shrink-0" />
                   <span className="text-gray-900 flex-shrink-0">{business.name}</span>
                 </div>
               </div>
 
+              {/* Business Title Section */}
               <div className="flex justify-between items-start pb-4 md:pb-0" ref={titleRef}>
                 <div>
                   <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
@@ -148,8 +169,10 @@ const BusinessProfile = () => {
           </div>
         </section>
 
+        {/* Main Content */}
         <div className="md:max-w-7xl md:mx-auto px-4 pt-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+            {/* Left Column */}
             <div className="lg:col-span-2 divide-y divide-gray-200 bg-white md:bg-transparent md:divide-y-0 md:space-y-6">
               <div className="md:bg-white md:rounded-lg overflow-hidden">
                 <PhotoCarousel photos={business.photos} />
@@ -199,6 +222,7 @@ const BusinessProfile = () => {
               </section>
             </div>
 
+            {/* Right Column */}
             <div className="hidden lg:block">
               <div className={`sticky transition-[top] duration-300 ${
                 isBusinessTitleVisible ? 'top-[72px]' : 'top-6'
@@ -219,6 +243,7 @@ const BusinessProfile = () => {
         </div>
       </main>
 
+      {/* Mobile Booking Button */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 lg:hidden">
         <button 
           onClick={() => {

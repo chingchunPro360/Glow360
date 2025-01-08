@@ -7,7 +7,7 @@ const Hero = () => {
   const navigate = useNavigate();
 
   const handleSearch = (query) => {
-    navigate(`/listings?search=${encodeURIComponent(query)}`);
+    navigate(`/search?q=${encodeURIComponent(query)}`);
   };
 
   return (
@@ -46,7 +46,7 @@ const Hero = () => {
               {CATEGORIES.map((category) => (
                 <Link
                   key={category}
-                  to={`/listings?category=${encodeURIComponent(category)}`}
+                  to={`/${encodeURIComponent(category)}`}
                   className="flex-none px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full 
                            text-sm font-medium hover:bg-white whitespace-nowrap
                            transition-colors duration-200"

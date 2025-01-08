@@ -1,27 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaSearch, FaFilter, FaTimes, FaMapMarkerAlt } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { FaSearch, FaFilter, FaTimes, FaMapMarkerAlt } from 'react-icons/fa';
 import { CATEGORIES, MOCK_BUSINESSES } from '../data/mockBusinesses';
 import { CITY_SERVICES } from '../data/mockLocations';
 
-// 定義 SearchBar 組件
 const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
-  const [query, setQuery] = useState('');
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [recentSearches, setRecentSearches] = useState([]);
-  const inputRef = useRef(null);
-  const suggestionsRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const [query, setQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [recentSearches, setRecentSearches] = useState([]);
+  const inputRef = useRef(null);
 
-  // 從 localStorage 讀取最近搜尋
-  useEffect(() => {
-    const saved = localStorage.getItem('recentSearches');
-    if (saved) {
-      setRecentSearches(JSON.parse(saved));
-    }
-  }, []);
+  // 獲取當前類別（從 URL 路徑）
+  const getCurrentCategory = () => {
+    const pathParts = location.pathname.split('/').filter(Boolean);
+    return pathParts[0] || '';
+  };
 
   // 儲存最近搜尋
   const saveRecentSearch = (searchTerm, type) => {
@@ -34,36 +29,37 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
     localStorage.setItem('recentSearches', JSON.stringify(updated));
   };
 
-  // 獲取城市服務映射
-  const getCityServiceMap = () => {
-    const cityMap = new Map();
-    
-    Object.values(CITY_SERVICES).forEach(country => {
-      Object.entries(country).forEach(([city, services]) => {
-        const hasBusinesses = MOCK_BUSINESSES.some(business => business.city === city);
-        if (hasBusinesses) {
-          cityMap.set(city, services);
+  // 處理搜尋
+  const handleSearch = (suggestion) => {
+    switch (suggestion.type) {
+      case 'service':
+        saveRecentSearch(suggestion.value, 'service');
+        navigate(`/${encodeURIComponent(suggestion.value)}`);
+        break;
+      case 'city':
+        saveRecentSearch(suggestion.value, 'city');
+        const category = getCurrentCategory();
+        if (category) {
+          navigate(`/${encodeURIComponent(category)}/${encodeURIComponent(suggestion.value)}`);
+        } else {
+          navigate(`/all/${encodeURIComponent(suggestion.value)}`);
         }
-      });
-    });
-    
-    return cityMap;
-  };
-
-  // 獲取服務提供的城市
-  const getServiceCities = (service) => {
-    const cities = new Set();
-    MOCK_BUSINESSES.forEach(business => {
-      if (business.category === service) {
-        cities.add(business.city);
-      }
-    });
-    return Array.from(cities);
+        break;
+      case 'business':
+        saveRecentSearch(suggestion.value, 'business');
+        navigate(`/business/${suggestion.id}`);
+        break;
+      default:
+        if (query.trim()) {
+          navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+        }
+    }
+    setShowSuggestions(false);
+    setQuery('');
   };
 
   // 獲取搜尋建議
   const getSuggestions = (searchQuery) => {
-    const cityServiceMap = getCityServiceMap();
     const lowercaseQuery = searchQuery.toLowerCase();
     
     // 服務建議
@@ -71,17 +67,16 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
       service.toLowerCase().includes(lowercaseQuery)
     ).map(service => ({
       type: 'service',
-      value: service,
-      cities: getServiceCities(service)
+      value: service
     }));
 
     // 城市建議
-    const cityMatches = Array.from(cityServiceMap.entries())
-      .filter(([city]) => city.toLowerCase().includes(lowercaseQuery))
-      .map(([city, services]) => ({
+    const cityMatches = Object.values(CITY_SERVICES)
+      .flatMap(country => Object.keys(country))
+      .filter(city => city.toLowerCase().includes(lowercaseQuery))
+      .map(city => ({
         type: 'city',
-        value: city,
-        services: services
+        value: city
       }));
 
     // 商家建議
@@ -93,8 +88,6 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
       .map(business => ({
         type: 'business',
         value: business.name,
-        category: business.category,
-        city: business.city,
         id: business.id
       }));
 
@@ -105,29 +98,7 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
     };
   };
 
-  const handleSearch = (suggestion) => {
-    switch (suggestion.type) {
-      case 'service':
-        saveRecentSearch(suggestion.value, 'service');
-        navigate(`/listings?category=${encodeURIComponent(suggestion.value)}`);
-        break;
-      case 'city':
-        saveRecentSearch(suggestion.value, 'city');
-        navigate(`/listings?city=${encodeURIComponent(suggestion.value)}`);
-        break;
-      case 'business':
-        saveRecentSearch(suggestion.value, 'business');
-        navigate(`/business/${suggestion.id}`);
-        break;
-      default:
-        if (query.trim()) {
-          navigate(`/listings?search=${encodeURIComponent(query.trim())}`);
-        }
-    }
-    setShowSuggestions(false);
-    setQuery('');
-  };
-
+  // 處理表單提交
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!query.trim()) return;
@@ -164,7 +135,6 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
             onChange={(e) => {
               setQuery(e.target.value);
               setShowSuggestions(true);
-              setSelectedIndex(-1);
             }}
             onFocus={() => setShowSuggestions(true)}
           />
@@ -175,7 +145,6 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
                 onClick={() => {
                   setQuery('');
                   setShowSuggestions(false);
-                  setSelectedIndex(-1);
                   inputRef.current?.focus();
                 }}
                 className="p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100"
@@ -204,34 +173,27 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
 
       {/* Suggestions Dropdown */}
       {showSuggestions && (query.length > 0 || recentSearches.length > 0) && (
-        <div 
-          ref={suggestionsRef}
-          className="absolute w-full mt-2 bg-white rounded-lg shadow-lg border border-gray-200 
-                   overflow-hidden z-50 max-h-[80vh] overflow-y-auto"
-        >
+        <div className="absolute w-full mt-2 bg-white rounded-lg shadow-lg border border-gray-200 
+                     overflow-hidden z-50 max-h-[80vh] overflow-y-auto">
           {/* Recent Searches */}
           {query.length === 0 && recentSearches.length > 0 && (
             <div className="border-b border-gray-100">
               <div className="px-4 py-2 text-sm font-medium text-gray-500 bg-gray-50">
                 Recent Searches
               </div>
-              {recentSearches.map((search, index) => (
+              {recentSearches.map((search) => (
                 <div
                   key={`${search.term}-${search.timestamp}`}
-                  className="px-4 py-3 cursor-pointer hover:bg-gray-50 flex items-center justify-between"
+                  className="px-4 py-3 cursor-pointer hover:bg-gray-50"
                   onClick={() => handleSearch({ 
                     type: search.type, 
-                    value: search.term,
-                    id: search.id 
+                    value: search.term 
                   })}
                 >
                   <div className="flex items-center">
                     <FaSearch className="h-4 w-4 text-gray-400 mr-2" />
                     <span>{search.term}</span>
                   </div>
-                  <span className="text-sm text-gray-400">
-                    {search.type}
-                  </span>
                 </div>
               ))}
             </div>
@@ -245,7 +207,7 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
                   <div className="px-4 py-2 text-sm font-medium text-gray-500 bg-gray-50">
                     Services
                   </div>
-                  {services.map((service, index) => (
+                  {services.map((service) => (
                     <div
                       key={service.value}
                       className="px-4 py-3 cursor-pointer hover:bg-gray-50"
@@ -253,14 +215,7 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
                     >
                       <div className="flex items-center">
                         <FaSearch className="h-4 w-4 text-gray-400 mr-2" />
-                        <div>
-                          <div>{service.value}</div>
-                          {service.cities.length > 0 && (
-                            <div className="text-sm text-gray-500">
-                              Available in {service.cities.join(', ')}
-                            </div>
-                          )}
-                        </div>
+                        <span>{service.value}</span>
                       </div>
                     </div>
                   ))}
@@ -273,7 +228,7 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
                   <div className="px-4 py-2 text-sm font-medium text-gray-500 bg-gray-50">
                     Cities
                   </div>
-                  {cities.map((city, index) => (
+                  {cities.map((city) => (
                     <div
                       key={city.value}
                       className="px-4 py-3 cursor-pointer hover:bg-gray-50"
@@ -281,14 +236,7 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
                     >
                       <div className="flex items-center">
                         <FaMapMarkerAlt className="h-4 w-4 text-gray-400 mr-2" />
-                        <div>
-                          <div>{city.value}</div>
-                          {city.services.length > 0 && (
-                            <div className="text-sm text-gray-500">
-                              {city.services.length} services available
-                            </div>
-                          )}
-                        </div>
+                        <span>{city.value}</span>
                       </div>
                     </div>
                   ))}
@@ -301,7 +249,7 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
                   <div className="px-4 py-2 text-sm font-medium text-gray-500 bg-gray-50">
                     Businesses
                   </div>
-                  {businesses.map((business, index) => (
+                  {businesses.map((business) => (
                     <div
                       key={business.id}
                       className="px-4 py-3 cursor-pointer hover:bg-gray-50"
@@ -309,12 +257,7 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
                     >
                       <div className="flex items-center">
                         <FaSearch className="h-4 w-4 text-gray-400 mr-2" />
-                        <div>
-                          <div>{business.value}</div>
-                          <div className="text-sm text-gray-500">
-                            {business.category} • {business.city}
-                          </div>
-                        </div>
+                        <span>{business.value}</span>
                       </div>
                     </div>
                   ))}
