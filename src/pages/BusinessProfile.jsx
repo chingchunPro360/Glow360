@@ -95,14 +95,14 @@ export default function BusinessProfile() {
                   </Link>
                   <FaChevronRight className="w-3 h-3 mx-2 text-gray-400 flex-shrink-0" />
                   <Link 
-                    to={`/service/${business.category}`}
+                    to={`/listings?category=${encodeURIComponent(business.category)}`}
                     className="hover:text-blue-600 transition-colors flex-shrink-0"
                   >
                     {business.category}
                   </Link>
                   <FaChevronRight className="w-3 h-3 mx-2 text-gray-400 flex-shrink-0" />
                   <Link 
-                    to={`/service/${business.category}/${business.city}`}
+                    to={`/listings?category=${encodeURIComponent(business.category)}&city=${encodeURIComponent(business.city)}`}
                     className="hover:text-blue-600 transition-colors flex-shrink-0"
                   >
                     {business.city}

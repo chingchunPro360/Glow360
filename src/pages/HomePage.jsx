@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Hero from '../components/Hero';
@@ -26,34 +27,31 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Fixed Header */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-white">
         <Header />
       </div>
 
-      {/* Sticky Categories */}
       <div className={`fixed top-16 left-0 right-0 z-40 bg-white border-b transform transition-transform duration-300 ${
         showStickyCategories ? 'translate-y-0' : '-translate-y-full'
       }`}>
         <div className="py-3 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex overflow-x-auto gap-4 scrollbar-hide">
             {CATEGORIES.map((category) => (
-              <a
+              <Link
                 key={category}
-                href={`/listings?category=${encodeURIComponent(category)}`}
+                to={`/service/${encodeURIComponent(category)}`}
                 className="flex-none px-4 py-2 bg-gray-100 rounded-full 
                          text-sm font-medium hover:bg-gray-200 whitespace-nowrap
                          transition-colors duration-200"
               >
                 {category}
-              </a>
+              </Link>
             ))}
           </div>
         </div>
       </div>
 
       <main className="pt-16">
-        {/* Hero Section with ID for scroll detection */}
         <div id="hero-section">
           <Hero />
         </div>

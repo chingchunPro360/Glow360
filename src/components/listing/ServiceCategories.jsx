@@ -1,2 +1,6 @@
-// Import and use the same SearchCategories component
-export { default } from '../SearchCategories';
+import React from 'react';
+import SearchCategories from '../SearchCategories';
+
+export default function ServiceCategories() {
+  return <SearchCategories />;
+}

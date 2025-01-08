@@ -40,7 +40,7 @@ export default function SearchCategories() {
                 {services.map((service) => (
                   <li key={service}>
                     <Link
-                      to={`/listings?category=${encodeURIComponent(service)}&city=${encodeURIComponent(city)}`}
+                      to={`/service/${encodeURIComponent(service)}`}
                       className="text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm"
                     >
                       {service} in {city}
