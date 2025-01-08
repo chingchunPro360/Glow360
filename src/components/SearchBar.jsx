@@ -4,35 +4,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { CATEGORIES, MOCK_BUSINESSES } from '../data/mockBusinesses';
 import { CITY_SERVICES } from '../data/mockLocations';
 
-// 獲取所有城市及其服務
-const getCityServiceMap = () => {
-  const cityMap = new Map();
-  
-  Object.values(CITY_SERVICES).forEach(country => {
-    Object.entries(country).forEach(([city, services]) => {
-      // 檢查該城市是否有實際的商家
-      const hasBusinesses = MOCK_BUSINESSES.some(business => business.city === city);
-      if (hasBusinesses) {
-        cityMap.set(city, services);
-      }
-    });
-  });
-  
-  return cityMap;
-};
-
-// 獲取服務提供的城市
-const getServiceCities = (service) => {
-  const cities = new Set();
-  MOCK_BUSINESSES.forEach(business => {
-    if (business.category === service) {
-      cities.add(business.city);
-    }
-  });
-  return Array.from(cities);
-};
-
-export default function SearchBar({ showFilters, setShowFilters }) {
+// 定義 SearchBar 組件
+const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
   const [query, setQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -59,6 +32,33 @@ export default function SearchBar({ showFilters, setShowFilters }) {
     
     setRecentSearches(updated);
     localStorage.setItem('recentSearches', JSON.stringify(updated));
+  };
+
+  // 獲取城市服務映射
+  const getCityServiceMap = () => {
+    const cityMap = new Map();
+    
+    Object.values(CITY_SERVICES).forEach(country => {
+      Object.entries(country).forEach(([city, services]) => {
+        const hasBusinesses = MOCK_BUSINESSES.some(business => business.city === city);
+        if (hasBusinesses) {
+          cityMap.set(city, services);
+        }
+      });
+    });
+    
+    return cityMap;
+  };
+
+  // 獲取服務提供的城市
+  const getServiceCities = (service) => {
+    const cities = new Set();
+    MOCK_BUSINESSES.forEach(business => {
+      if (business.category === service) {
+        cities.add(business.city);
+      }
+    });
+    return Array.from(cities);
   };
 
   // 獲取搜尋建議
@@ -109,7 +109,7 @@ export default function SearchBar({ showFilters, setShowFilters }) {
     switch (suggestion.type) {
       case 'service':
         saveRecentSearch(suggestion.value, 'service');
-        navigate(`/service/${encodeURIComponent(suggestion.value)}`);
+        navigate(`/listings?category=${encodeURIComponent(suggestion.value)}`);
         break;
       case 'city':
         saveRecentSearch(suggestion.value, 'city');
@@ -333,4 +333,6 @@ export default function SearchBar({ showFilters, setShowFilters }) {
       )}
     </div>
   );
-}
+};
+
+export default SearchBar;

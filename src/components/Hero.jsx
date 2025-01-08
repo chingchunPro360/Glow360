@@ -1,9 +1,9 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import SearchBar from './SearchBar';
 import { CATEGORIES } from '../data/mockBusinesses';
 
-export default function Hero() {
+const Hero = () => {
   const navigate = useNavigate();
 
   const handleSearch = (query) => {
@@ -44,15 +44,15 @@ export default function Hero() {
           <div className="w-full max-w-4xl">
             <div className="flex overflow-x-auto gap-3 pb-4 scrollbar-hide">
               {CATEGORIES.map((category) => (
-                <a
+                <Link
                   key={category}
-                  href={`/listings?category=${encodeURIComponent(category)}`}
+                  to={`/listings?category=${encodeURIComponent(category)}`}
                   className="flex-none px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full 
                            text-sm font-medium hover:bg-white whitespace-nowrap
                            transition-colors duration-200"
                 >
                   {category}
-                </a>
+                </Link>
               ))}
             </div>
           </div>
@@ -60,4 +60,6 @@ export default function Hero() {
       </div>
     </div>
   );
-}
+};
+
+export default Hero;

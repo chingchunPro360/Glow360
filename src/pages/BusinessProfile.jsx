@@ -9,7 +9,7 @@ import ReviewSection from '../components/profile/ReviewSection';
 import BookingCard from '../components/profile/BookingCard';
 import PromotionCard from '../components/profile/PromotionCard';
 
-export default function BusinessProfile() {
+const BusinessProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const titleRef = useRef(null);
@@ -231,4 +231,6 @@ export default function BusinessProfile() {
       </div>
     </div>
   );
-}
+};
+
+export default BusinessProfile;

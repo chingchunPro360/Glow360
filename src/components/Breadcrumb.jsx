@@ -13,7 +13,7 @@ export default function Breadcrumb({ items }) {
           <FaChevronRight className="w-3 h-3 mx-2 text-gray-400" />
           {item.to ? (
             <Link 
-              to={item.to}
+              to={`/listings?category=${encodeURIComponent(item.label)}`} // 修改為統一格式
               className="hover:text-blue-600 transition-colors"
             >
               {item.label}
