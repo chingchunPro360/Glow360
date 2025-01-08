@@ -64,9 +64,9 @@ export default function BusinessProfile() {
 
       {showMobileHeader && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md md:hidden">
-          <div className="mx-4">
+          <div className="mx-4 py-4">
             <h2 className="text-lg font-bold text-gray-900">{business.name}</h2>
-            <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
+            <div className="flex items-center gap-2 text-sm text-gray-600 mt-1 mb-2">
               <span>{business.category}</span>
               <span>•</span>
               <div className="flex items-center">
@@ -112,12 +112,12 @@ export default function BusinessProfile() {
                 </div>
               </div>
 
-              <div className="flex justify-between items-start" ref={titleRef}>
+              <div className="flex justify-between items-start pb-4 md:pb-0" ref={titleRef}>
                 <div>
                   <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
                     {business.name}
                   </h1>
-                  <div className="flex flex-wrap items-center gap-2 text-sm md:text-base text-gray-600">
+                  <div className="flex flex-wrap items-center gap-2 text-sm md:text-base text-gray-600 mb-2 md:mb-0">
                     <span>{business.category}</span>
                     <span>•</span>
                     <div className="flex items-center">
