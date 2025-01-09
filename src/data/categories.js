@@ -1,23 +1,16 @@
-// 場所類型（venues）
 export const CATEGORIES = [
   'Hair Salon',
   'Nail Salon',
   'Spa',
-  'Beauty Salon',
   'Barbershop',
   'Massage Center',
   'Skincare Clinic',
   'Wellness Center',
   'Lash Studio',
   'Waxing Studio',
-  'Makeup Studio',
-  'Tanning Salon',
-  'Eyebrow Bar',
-  'Med Spa',
-  'Hair Removal Center'
+  'Makeup Studio'
 ];
 
-// 服務項目（treatments）
 export const TREATMENTS = {
   'Hair Salon': [
     'Haircut',
@@ -29,11 +22,7 @@ export const TREATMENTS = {
     'Hair Extensions',
     'Keratin Treatment',
     'Hair Styling',
-    'Root Touch-up',
-    'Deep Conditioning',
-    'Scalp Treatment',
-    'Bridal Hair',
-    'Children\'s Haircut'
+    'Root Touch-up'
   ],
   'Nail Salon': [
     'Manicure',
@@ -42,14 +31,8 @@ export const TREATMENTS = {
     'Acrylic Nails',
     'Nail Art',
     'Nail Extensions',
-    'Paraffin Treatment',
-    'Express Manicure',
-    'Dipping Powder',
-    'Nail Repair',
-    'Hand Massage',
-    'Foot Massage',
     'Polish Change',
-    'Nail Removal'
+    'Nail Repair'
   ],
   'Spa': [
     'Swedish Massage',
@@ -58,14 +41,8 @@ export const TREATMENTS = {
     'Aromatherapy',
     'Body Scrub',
     'Body Wrap',
-    'Hydrotherapy',
-    'Couples Massage',
-    'Foot Reflexology',
-    'Steam Room',
-    'Sauna',
-    'Mud Bath',
-    'Detox Treatment',
-    'Spa Packages'
+    'Facial',
+    'Foot Massage'
   ],
   'Barbershop': [
     'Men\'s Haircut',
@@ -73,16 +50,6 @@ export const TREATMENTS = {
     'Hot Towel Shave',
     'Hair Design',
     'Color & Highlights',
-    'Facial Grooming',
-    'Head Shave',
-    'Beard Grooming',
-    'Kids Haircut',
-    'Hair Tattoo',
-    'Scalp Treatment',
-    'Face Massage',
-    'Line Up',
-    'Beard Coloring'
+    'Facial Grooming'
   ]
 };
-
-// ... 其他代碼保持不變 ...

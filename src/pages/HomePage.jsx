@@ -1,68 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
-import Footer from '../components/Footer';
-import Hero from '../components/Hero';
-import FeaturedBusinesses from '../components/FeaturedBusinesses';
-import NewBusinesses from '../components/NewBusinesses';
-import SearchCategories from '../components/SearchCategories';
-import CustomerReviews from '../components/CustomerReviews';
-import { CATEGORIES } from '../data/mockBusinesses';
+import { CATEGORIES } from '../data/categories';
 
-export default function HomePage() {
-  const [showStickyCategories, setShowStickyCategories] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const heroSection = document.getElementById('hero-section');
-      if (heroSection) {
-        const heroBottom = heroSection.getBoundingClientRect().bottom;
-        setShowStickyCategories(heroBottom < 0);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
+function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="fixed top-0 left-0 right-0 z-50 bg-white">
-        <Header />
-      </div>
-
-      <div className={`fixed top-16 left-0 right-0 z-40 bg-white border-b transform transition-transform duration-300 ${
-        showStickyCategories ? 'translate-y-0' : '-translate-y-full'
-      }`}>
-        <div className="py-3 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex overflow-x-auto gap-4 scrollbar-hide">
-            {CATEGORIES.map((category) => (
-              <Link
-                key={category}
-                to={`/service/${encodeURIComponent(category)}`}
-                className="flex-none px-4 py-2 bg-gray-100 rounded-full 
-                         text-sm font-medium hover:bg-gray-200 whitespace-nowrap
-                         transition-colors duration-200"
-              >
-                {category}
-              </Link>
-            ))}
-          </div>
+      <Header />
+      <main className="max-w-7xl mx-auto px-4 py-12">
+        <h1 className="text-4xl font-bold text-center mb-8">
+          Welcome to Glow360
+        </h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {CATEGORIES.map((category) => (
+            <Link
+              key={category}
+              to={`/${encodeURIComponent(category)}`}
+              className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
+            >
+              <h2 className="text-xl font-semibold text-gray-900">{category}</h2>
+            </Link>
+          ))}
         </div>
-      </div>
-
-      <main className="pt-16">
-        <div id="hero-section">
-          <Hero />
-        </div>
-        
-        <FeaturedBusinesses />
-        <NewBusinesses />
-        <CustomerReviews />
-        <SearchCategories />
       </main>
-      
-      <Footer />
     </div>
   );
 }
+
+export default HomePage;
