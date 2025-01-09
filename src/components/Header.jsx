@@ -5,7 +5,10 @@ import SearchBar from './SearchBar';
 
 export default function Header({ showMap, setShowMap, showFilters, setShowFilters }) {
   const location = useLocation();
-  const isListingsPage = location.pathname !== '/';
+  
+  // 檢查當前頁面類型
+  const isBusinessProfile = location.pathname.startsWith('/business/');
+  const isListingsPage = !isBusinessProfile && location.pathname !== '/';
 
   return (
     <header className="bg-white shadow-sm">

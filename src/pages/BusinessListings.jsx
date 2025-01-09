@@ -107,9 +107,9 @@ const BusinessListings = () => {
         setShowFilters={setShowFilters}
       />
       
-      <main className="pt-16">
+      <main className="pt-4">
         {/* 類別選擇器 */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
           <div className="flex overflow-x-auto gap-4 scrollbar-hide">
             {CATEGORIES.map((categoryName) => (
               <button
@@ -128,7 +128,7 @@ const BusinessListings = () => {
         </div>
 
         {/* 主要內容區域 */}
-        <section className="py-8">
+        <section className="py-4">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex gap-8">
               {/* 過濾器側邊欄 */}
@@ -146,7 +146,7 @@ const BusinessListings = () => {
               {/* 商家列表區域 */}
               <div className="flex-1">
                 {/* 麵包屑導航 */}
-                <div className="flex items-center text-sm text-gray-600 mb-4">
+                <div className="flex items-center text-sm text-gray-600 mb-2">
                   <Link to="/" className="hover:text-blue-600 transition-colors">
                     Home
                   </Link>
@@ -165,7 +165,7 @@ const BusinessListings = () => {
                 </div>
 
                 {/* 頁面標題 */}
-                <h1 className="text-2xl font-bold text-gray-900 mb-6">
+                <h1 className="text-2xl font-bold text-gray-900 mb-4">
                   {getPageTitle()}
                 </h1>
 

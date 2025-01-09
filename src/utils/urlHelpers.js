@@ -22,3 +22,8 @@ export const generatePath = (...segments) => {
     .map(formatUrlSegment)
     .join('/');
 };
+
+// 檢查是否為有效的類別
+export const isValidCategory = (category) => {
+  return CATEGORIES.includes(parseUrlSegment(category));
+};
