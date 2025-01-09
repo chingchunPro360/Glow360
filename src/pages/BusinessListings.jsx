@@ -8,10 +8,9 @@ import FilterSidebar from '../components/listing/FilterSidebar';
 import MapView from '../components/listing/MapView';
 import ServiceCategories from '../components/SearchCategories';
 import Testimonials from '../components/listing/Testimonials';
-import { MOCK_BUSINESSES, CATEGORIES } from '../data/mockBusinesses';  // 添加 MOCK_BUSINESSES 導入
+import { MOCK_BUSINESSES, CATEGORIES } from '../data/mockBusinesses';
 
 const BusinessListings = () => {
-  // 使用 useParams 替代 useSearchParams
   const { category, city, district } = useParams();
   const [showMap, setShowMap] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
@@ -28,7 +27,7 @@ const BusinessListings = () => {
     if (category) {
       setSelectedFilters(prev => ({
         ...prev,
-        serviceType: [category]
+        serviceType: [decodeURIComponent(category)]
       }));
     }
   }, [category]);
@@ -38,22 +37,25 @@ const BusinessListings = () => {
     const items = [];
     
     if (category) {
+      const decodedCategory = decodeURIComponent(category);
       items.push({
-        label: category,
+        label: decodedCategory,
         path: `/${category}`
       });
     }
     
     if (city) {
+      const decodedCity = decodeURIComponent(city);
       items.push({
-        label: city,
+        label: decodedCity,
         path: `/${category}/${city}`
       });
     }
     
     if (district) {
+      const decodedDistrict = decodeURIComponent(district);
       items.push({
-        label: district,
+        label: decodedDistrict,
         path: `/${category}/${city}/${district}`
       });
     }
@@ -64,9 +66,9 @@ const BusinessListings = () => {
   // 過濾商家列表
   const filteredBusinesses = React.useMemo(() => {
     return MOCK_BUSINESSES.filter(business => {
-      if (category && business.category !== category) return false;
-      if (city && business.city !== city) return false;
-      if (district && business.district !== district) return false;
+      if (category && business.category !== decodeURIComponent(category)) return false;
+      if (city && business.city !== decodeURIComponent(city)) return false;
+      if (district && business.district !== decodeURIComponent(district)) return false;
       if (selectedFilters.serviceType.length > 0 && 
           !selectedFilters.serviceType.includes(business.category)) return false;
       if (selectedFilters.openNow && !business.isOpen) return false;
@@ -79,10 +81,22 @@ const BusinessListings = () => {
 
   // 生成頁面標題
   const getPageTitle = () => {
-    if (category && city && district) return `${category} in ${city} - ${district}`;
-    if (category && city) return `${category} in ${city}`;
-    if (category) return category;
-    if (city) return `Beauty Services in ${city}`;
+    const decodedCategory = category ? decodeURIComponent(category) : '';
+    const decodedCity = city ? decodeURIComponent(city) : '';
+    const decodedDistrict = district ? decodeURIComponent(district) : '';
+
+    if (decodedCategory && decodedCity && decodedDistrict) {
+      return `${decodedCategory} in ${decodedCity} - ${decodedDistrict}`;
+    }
+    if (decodedCategory && decodedCity) {
+      return `${decodedCategory} in ${decodedCity}`;
+    }
+    if (decodedCategory) {
+      return decodedCategory;
+    }
+    if (decodedCity) {
+      return `Beauty Services in ${decodedCity}`;
+    }
     return 'All Beauty Services';
   };
 
@@ -104,7 +118,7 @@ const BusinessListings = () => {
                 key={categoryName}
                 to={`/${encodeURIComponent(categoryName)}`}
                 className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
-                  category === categoryName
+                  decodeURIComponent(category) === categoryName
                     ? 'bg-blue-600 text-white'
                     : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                 }`}

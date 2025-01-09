@@ -438,9 +438,9 @@ export const MOCK_BUSINESSES = [
     description: "Contemporary salon focusing on modern techniques and trends.",
     category: "Hair Salon",
     country: "United States",
-    city: "Miami",
-    neighborhood: "South Beach",
-    location: "321 Ocean Drive, Miami Beach",
+    city: "San Francisco",
+    neighborhood: "Financial District",
+    location: "321 Ocean Drive, San Francisco",
     coordinates: {
       latitude: 25.7617,
       longitude: -80.1918
