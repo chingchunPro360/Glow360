@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { FaSearch, FaFilter, FaTimes, FaMapMarkerAlt } from 'react-icons/fa';
 import { CATEGORIES, MOCK_BUSINESSES } from '../data/mockBusinesses';
 import { CITY_SERVICES } from '../data/mockLocations';
@@ -7,12 +7,18 @@ import { CITY_SERVICES } from '../data/mockLocations';
 const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const params = useParams();
   const [query, setQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [recentSearches, setRecentSearches] = useState([]);
   const inputRef = useRef(null);
 
-  // 獲取當前類別（從 URL 路徑）
+  // 從 URL 獲取當前城市
+  const getCurrentCity = () => {
+    return params.city || '';
+  };
+
+  // 從 URL 獲取當前類別
   const getCurrentCategory = () => {
     const pathParts = location.pathname.split('/').filter(Boolean);
     return pathParts[0] || '';
@@ -31,16 +37,22 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
 
   // 處理搜尋
   const handleSearch = (suggestion) => {
+    const currentCity = getCurrentCity();
+
     switch (suggestion.type) {
       case 'service':
         saveRecentSearch(suggestion.value, 'service');
-        navigate(`/${encodeURIComponent(suggestion.value)}`);
+        if (currentCity) {
+          navigate(`/${encodeURIComponent(suggestion.value)}/${encodeURIComponent(currentCity)}`);
+        } else {
+          navigate(`/${encodeURIComponent(suggestion.value)}`);
+        }
         break;
       case 'city':
         saveRecentSearch(suggestion.value, 'city');
-        const category = getCurrentCategory();
-        if (category) {
-          navigate(`/${encodeURIComponent(category)}/${encodeURIComponent(suggestion.value)}`);
+        const currentCategory = getCurrentCategory();
+        if (currentCategory) {
+          navigate(`/${encodeURIComponent(currentCategory)}/${encodeURIComponent(suggestion.value)}`);
         } else {
           navigate(`/all/${encodeURIComponent(suggestion.value)}`);
         }
@@ -51,7 +63,12 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
         break;
       default:
         if (query.trim()) {
-          navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+          const searchQuery = encodeURIComponent(query.trim());
+          if (currentCity) {
+            navigate(`/search/${searchQuery}/${encodeURIComponent(currentCity)}`);
+          } else {
+            navigate(`/search/${searchQuery}`);
+          }
         }
     }
     setShowSuggestions(false);
@@ -88,7 +105,8 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
       .map(business => ({
         type: 'business',
         value: business.name,
-        id: business.id
+        id: business.id,
+        category: business.category
       }));
 
     return {
@@ -114,6 +132,14 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
       handleSearch({ type: 'search', value: query });
     }
   };
+
+  // 載入最近搜尋
+  useEffect(() => {
+    const savedSearches = localStorage.getItem('recentSearches');
+    if (savedSearches) {
+      setRecentSearches(JSON.parse(savedSearches));
+    }
+  }, []);
 
   const { services, cities, businesses } = getSuggestions(query);
   const hasResults = services.length > 0 || cities.length > 0 || businesses.length > 0;
@@ -258,6 +284,9 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
                       <div className="flex items-center">
                         <FaSearch className="h-4 w-4 text-gray-400 mr-2" />
                         <span>{business.value}</span>
+                        <span className="ml-2 text-sm text-gray-500">
+                          ({business.category})
+                        </span>
                       </div>
                     </div>
                   ))}

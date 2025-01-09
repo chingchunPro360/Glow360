@@ -12,6 +12,7 @@ import { MOCK_BUSINESSES, CATEGORIES } from '../data/mockBusinesses';
 
 const BusinessListings = () => {
   const { category, city, district } = useParams();
+  const navigate = useNavigate();
   const [showMap, setShowMap] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState({
@@ -21,6 +22,15 @@ const BusinessListings = () => {
     location: '',
     openNow: false
   });
+
+  // 處理類別點擊
+  const handleCategoryClick = (newCategory) => {
+    if (city) {
+      navigate(`/${encodeURIComponent(newCategory)}/${encodeURIComponent(city)}`);
+    } else {
+      navigate(`/${encodeURIComponent(newCategory)}`);
+    }
+  };
 
   // 當類別改變時更新過濾器
   useEffect(() => {
@@ -35,40 +45,33 @@ const BusinessListings = () => {
   // 構建麵包屑數據
   const breadcrumbItems = React.useMemo(() => {
     const items = [];
+    const decodedCategory = category ? decodeURIComponent(category) : '';
+    const decodedCity = city ? decodeURIComponent(city) : '';
     
+    // 只添加當前類別
     if (category) {
-      const decodedCategory = decodeURIComponent(category);
       items.push({
         label: decodedCategory,
         path: `/${category}`
       });
     }
     
+    // 如果有城市，則添加城市
     if (city) {
-      const decodedCity = decodeURIComponent(city);
       items.push({
         label: decodedCity,
         path: `/${category}/${city}`
       });
     }
     
-    if (district) {
-      const decodedDistrict = decodeURIComponent(district);
-      items.push({
-        label: decodedDistrict,
-        path: `/${category}/${city}/${district}`
-      });
-    }
-    
     return items;
-  }, [category, city, district]);
+  }, [category, city]);
 
   // 過濾商家列表
   const filteredBusinesses = React.useMemo(() => {
     return MOCK_BUSINESSES.filter(business => {
       if (category && business.category !== decodeURIComponent(category)) return false;
       if (city && business.city !== decodeURIComponent(city)) return false;
-      if (district && business.district !== decodeURIComponent(district)) return false;
       if (selectedFilters.serviceType.length > 0 && 
           !selectedFilters.serviceType.includes(business.category)) return false;
       if (selectedFilters.openNow && !business.isOpen) return false;
@@ -77,17 +80,13 @@ const BusinessListings = () => {
       if (selectedFilters.rating && business.rating < selectedFilters.rating) return false;
       return true;
     });
-  }, [category, city, district, selectedFilters]);
+  }, [category, city, selectedFilters]);
 
   // 生成頁面標題
   const getPageTitle = () => {
     const decodedCategory = category ? decodeURIComponent(category) : '';
     const decodedCity = city ? decodeURIComponent(city) : '';
-    const decodedDistrict = district ? decodeURIComponent(district) : '';
 
-    if (decodedCategory && decodedCity && decodedDistrict) {
-      return `${decodedCategory} in ${decodedCity} - ${decodedDistrict}`;
-    }
     if (decodedCategory && decodedCity) {
       return `${decodedCategory} in ${decodedCity}`;
     }
@@ -114,9 +113,9 @@ const BusinessListings = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex overflow-x-auto gap-4 scrollbar-hide">
             {CATEGORIES.map((categoryName) => (
-              <Link
+              <button
                 key={categoryName}
-                to={`/${encodeURIComponent(categoryName)}`}
+                onClick={() => handleCategoryClick(categoryName)}
                 className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
                   decodeURIComponent(category) === categoryName
                     ? 'bg-blue-600 text-white'
@@ -124,7 +123,7 @@ const BusinessListings = () => {
                 }`}
               >
                 {categoryName}
-              </Link>
+              </button>
             ))}
           </div>
         </div>
