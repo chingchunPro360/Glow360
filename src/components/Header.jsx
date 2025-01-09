@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaUser } from 'react-icons/fa';
+import { FaUser, FaMapMarkerAlt, FaList } from 'react-icons/fa';
 import SearchBar from './SearchBar';
 
 export default function Header({ showMap, setShowMap, showFilters, setShowFilters }) {
@@ -19,15 +19,26 @@ export default function Header({ showMap, setShowMap, showFilters, setShowFilter
           {/* Search Bar */}
           <div className="flex-1 flex justify-center px-4">
             <SearchBar 
-              showMap={showMap}
-              setShowMap={setShowMap}
               showFilters={isListingsPage ? showFilters : undefined}
               setShowFilters={isListingsPage ? setShowFilters : undefined}
             />
           </div>
 
           {/* Right Section */}
-          <div className="flex items-center">
+          <div className="flex items-center space-x-2">
+            {isListingsPage && setShowMap && (
+              <button
+                onClick={() => setShowMap(!showMap)}
+                className="p-2.5 rounded-full hover:bg-gray-100"
+                aria-label={showMap ? 'Show list view' : 'Show map view'}
+              >
+                {showMap ? (
+                  <FaList className="h-5 w-5 text-gray-600" />
+                ) : (
+                  <FaMapMarkerAlt className="h-5 w-5 text-gray-600" />
+                )}
+              </button>
+            )}
             <Link 
               to="/account" 
               className="p-2.5 rounded-full hover:bg-gray-100"
