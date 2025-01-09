@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { COUNTRIES, CITY_SERVICES } from '../data';
+import { formatUrlSegment } from '../utils/urlHelpers';
+import { COUNTRIES, CITY_SERVICES } from '../data/mockLocations';
 
 export default function SearchCategories() {
   const [selectedCountry, setSelectedCountry] = useState('United States');
@@ -40,7 +41,7 @@ export default function SearchCategories() {
                 {services.map((service) => (
                   <li key={service}>
                     <Link
-                      to={`/service/${encodeURIComponent(service)}`}
+                      to={`/${formatUrlSegment(service)}/${formatUrlSegment(city)}`}
                       className="text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm"
                     >
                       {service} in {city}

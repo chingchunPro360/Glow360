@@ -2,12 +2,13 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import SearchBar from './SearchBar';
 import { CATEGORIES } from '../data/mockBusinesses';
+import { formatUrlSegment } from '../utils/urlHelpers';
 
 const Hero = () => {
   const navigate = useNavigate();
 
   const handleSearch = (query) => {
-    navigate(`/search?q=${encodeURIComponent(query)}`);
+    navigate(`/search?q=${formatUrlSegment(query)}`);
   };
 
   return (
@@ -46,7 +47,7 @@ const Hero = () => {
               {CATEGORIES.map((category) => (
                 <Link
                   key={category}
-                  to={`/${encodeURIComponent(category)}`}
+                  to={`/${formatUrlSegment(category)}`}
                   className="flex-none px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full 
                            text-sm font-medium hover:bg-white whitespace-nowrap
                            transition-colors duration-200"

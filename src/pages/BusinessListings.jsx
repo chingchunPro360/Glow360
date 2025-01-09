@@ -1,163 +1,213 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { FaChevronRight } from 'react-icons/fa';
 import Header from '../components/Header';
-import ScrollableList from '../components/ScrollableList';
-import BusinessCard from '../components/BusinessCard';
-import Filters from '../components/Filters';
-import { CATEGORIES, TREATMENTS } from '../data/categories';
-import { BUSINESSES } from '../data/businesses';
-import { FaSpinner, FaFilter } from 'react-icons/fa';
+import Footer from '../components/Footer';
+import BusinessCardGrid from '../components/BusinessCardGrid';
+import FilterSidebar from '../components/listing/FilterSidebar';
+import MapView from '../components/listing/MapView';
+import ServiceCategories from '../components/SearchCategories';
+import Testimonials from '../components/listing/Testimonials';
+import { MOCK_BUSINESSES, CATEGORIES } from '../data/mockBusinesses';
+import { formatUrlSegment, parseUrlSegment } from '../utils/urlHelpers';
 
-function BusinessListings() {
-  const { category, treatment } = useParams();
+const BusinessListings = () => {
+  const { category, city, district } = useParams();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const [showMap, setShowMap] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState({
+  const [selectedFilters, setSelectedFilters] = useState({
+    serviceType: [],
     rating: null,
     priceRange: [],
+    location: '',
     openNow: false
   });
-  
-  const decodedCategory = decodeURIComponent(category);
-  const decodedTreatment = treatment ? decodeURIComponent(treatment) : '';
-  const treatments = TREATMENTS[decodedCategory] || [];
 
-  const handleCategoryClick = async (newCategory) => {
-    setIsLoading(true);
-    navigate(`/${encodeURIComponent(newCategory)}`);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    setIsLoading(false);
-  };
-
-  const handleTreatmentClick = async (selectedTreatment) => {
-    setIsLoading(true);
-    if (decodedTreatment === selectedTreatment) {
-      navigate(`/${category}`);
+  // 處理類別點擊
+  const handleCategoryClick = (newCategory) => {
+    if (city) {
+      navigate(`/${formatUrlSegment(newCategory)}/${formatUrlSegment(city)}`);
     } else {
-      navigate(`/${category}/${encodeURIComponent(selectedTreatment)}`);
+      navigate(`/${formatUrlSegment(newCategory)}`);
     }
-    await new Promise(resolve => setTimeout(resolve, 500));
-    setIsLoading(false);
   };
+
+  // 當類別改變時更新過濾器
+  useEffect(() => {
+    if (category) {
+      setSelectedFilters(prev => ({
+        ...prev,
+        serviceType: [parseUrlSegment(category)]
+      }));
+    }
+  }, [category]);
+
+  // 構建麵包屑數據
+  const breadcrumbItems = useMemo(() => {
+    const items = [];
+    const decodedCategory = category ? parseUrlSegment(category) : '';
+    const decodedCity = city ? parseUrlSegment(city) : '';
+    
+    if (category) {
+      items.push({
+        label: decodedCategory,
+        path: `/${category}`
+      });
+    }
+    
+    if (city) {
+      items.push({
+        label: decodedCity,
+        path: `/${category}/${city}`
+      });
+    }
+    
+    return items;
+  }, [category, city]);
 
   // 過濾商家列表
-  const filteredBusinesses = BUSINESSES.filter(business => {
-    // 類別和服務過濾
-    if (business.category !== decodedCategory) return false;
-    if (decodedTreatment && !business.services.includes(decodedTreatment)) return false;
-    
-    // 評分過濾
-    if (filters.rating && business.rating < filters.rating) return false;
-    
-    // 價格範圍過濾
-    if (filters.priceRange.length > 0 && !filters.priceRange.includes(business.price)) return false;
-    
-    // 營業狀態過濾
-    if (filters.openNow && !business.isOpen) return false;
-    
-    return true;
-  });
+  const filteredBusinesses = useMemo(() => {
+    return MOCK_BUSINESSES.filter(business => {
+      if (category && business.category !== parseUrlSegment(category)) return false;
+      if (city && business.city !== parseUrlSegment(city)) return false;
+      if (selectedFilters.serviceType.length > 0 && 
+          !selectedFilters.serviceType.includes(business.category)) return false;
+      if (selectedFilters.openNow && !business.isOpen) return false;
+      if (selectedFilters.priceRange.length > 0 && 
+          !selectedFilters.priceRange.includes(business.price)) return false;
+      if (selectedFilters.rating && business.rating < selectedFilters.rating) return false;
+      return true;
+    });
+  }, [category, city, selectedFilters]);
+
+  // 生成頁面標題
+  const getPageTitle = () => {
+    const decodedCategory = category ? parseUrlSegment(category) : '';
+    const decodedCity = city ? parseUrlSegment(city) : '';
+
+    if (decodedCategory && decodedCity) {
+      return `${decodedCategory} in ${decodedCity}`;
+    }
+    if (decodedCategory) {
+      return decodedCategory;
+    }
+    if (decodedCity) {
+      return `Beauty Services in ${decodedCity}`;
+    }
+    return 'All Beauty Services';
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <Header 
+        showMap={showMap}
+        setShowMap={setShowMap}
+        showFilters={showFilters}
+        setShowFilters={setShowFilters}
+      />
       
       <main className="pt-16">
-        {/* Categories List */}
-        <div className="bg-white py-4 sticky top-0 z-10 shadow-sm">
-          <div className="max-w-7xl mx-auto">
-            <ScrollableList
-              items={CATEGORIES}
-              selectedItem={decodedCategory}
-              onItemClick={handleCategoryClick}
-            />
+        {/* 類別選擇器 */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex overflow-x-auto gap-4 scrollbar-hide">
+            {CATEGORIES.map((categoryName) => (
+              <button
+                key={categoryName}
+                onClick={() => handleCategoryClick(categoryName)}
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
+                  parseUrlSegment(category) === categoryName
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                }`}
+              >
+                {categoryName}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">
-              {decodedTreatment || decodedCategory}
-              {decodedTreatment && (
-                <span className="text-gray-500"> in {decodedCategory}</span>
+        {/* 主要內容區域 */}
+        <section className="py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex gap-8">
+              {/* 過濾器側邊欄 */}
+              {showFilters && (
+                <div className="w-64 flex-shrink-0">
+                  <div className="sticky top-24">
+                    <FilterSidebar
+                      filters={selectedFilters}
+                      onChange={setSelectedFilters}
+                    />
+                  </div>
+                </div>
               )}
-            </h1>
-            
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white shadow-sm
-                       hover:bg-gray-50 transition-colors"
-            >
-              <FaFilter className={showFilters ? 'text-blue-600' : 'text-gray-600'} />
-              <span>Filters</span>
-            </button>
-          </div>
 
-          {/* Treatments List */}
-          {treatments.length > 0 && (
-            <div className="mb-8">
-              <ScrollableList
-                items={treatments}
-                selectedItem={decodedTreatment}
-                onItemClick={handleTreatmentClick}
-              />
-            </div>
-          )}
+              {/* 商家列表區域 */}
+              <div className="flex-1">
+                {/* 麵包屑導航 */}
+                <div className="flex items-center text-sm text-gray-600 mb-4">
+                  <Link to="/" className="hover:text-blue-600 transition-colors">
+                    Home
+                  </Link>
+                  {breadcrumbItems.map((item, index) => (
+                    <React.Fragment key={item.path}>
+                      <FaChevronRight className="mx-2 text-gray-400" />
+                      {index === breadcrumbItems.length - 1 ? (
+                        <span className="text-gray-900">{item.label}</span>
+                      ) : (
+                        <Link to={item.path} className="hover:text-blue-600 transition-colors">
+                          {item.label}
+                        </Link>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
 
-          <div className="flex gap-8">
-            {/* Filters Sidebar */}
-            {showFilters && (
-              <div className="w-64 flex-shrink-0">
-                <div className="sticky top-24">
-                  <Filters
-                    filters={filters}
-                    onChange={setFilters}
+                {/* 頁面標題 */}
+                <h1 className="text-2xl font-bold text-gray-900 mb-6">
+                  {getPageTitle()}
+                </h1>
+
+                {/* 商家列表/地圖視圖 */}
+                {showMap ? (
+                  <MapView 
+                    businesses={filteredBusinesses}
+                    onBusinessClick={(business) => {
+                      console.log('Business clicked:', business);
+                    }}
                   />
-                </div>
+                ) : (
+                  <BusinessCardGrid 
+                    businesses={filteredBusinesses}
+                    scrollable={false}
+                  />
+                )}
+
+                {/* 無結果提示 */}
+                {filteredBusinesses.length === 0 && (
+                  <div className="text-center py-12">
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      No businesses found
+                    </h3>
+                    <p className="text-gray-600">
+                      Try adjusting your filters or search criteria
+                    </p>
+                  </div>
+                )}
               </div>
-            )}
-
-            {/* Main Content */}
-            <div className="flex-1">
-              {isLoading ? (
-                <div className="flex items-center justify-center py-12">
-                  <FaSpinner className="w-8 h-8 text-blue-600 animate-spin" />
-                </div>
-              ) : (
-                <>
-                  {/* Results Count */}
-                  <div className="mb-4 text-gray-600">
-                    {filteredBusinesses.length} {filteredBusinesses.length === 1 ? 'result' : 'results'} found
-                  </div>
-
-                  {/* Businesses Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredBusinesses.map(business => (
-                      <BusinessCard key={business.id} business={business} />
-                    ))}
-                  </div>
-
-                  {/* No Results Message */}
-                  {filteredBusinesses.length === 0 && (
-                    <div className="text-center py-12">
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">
-                        No businesses found
-                      </h3>
-                      <p className="text-gray-600">
-                        Try adjusting your filters or search criteria
-                      </p>
-                    </div>
-                  )}
-                </>
-              )}
             </div>
           </div>
-        </div>
+        </section>
+
+        {/* 額外內容區域 */}
+        <Testimonials />
+        <ServiceCategories />
       </main>
+
+      <Footer />
     </div>
   );
-}
+};
 
 export default BusinessListings;
