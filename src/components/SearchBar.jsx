@@ -14,7 +14,129 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
   const [recentSearches, setRecentSearches] = useState([]);
   const inputRef = useRef(null);
 
-  // ... 其他函數保持不變 ...
+  // 處理搜尋
+  const handleSearch = (suggestion) => {
+    console.log('Handling search for:', suggestion); // 添加日誌
+
+    const currentCity = getCurrentCity();
+    const currentCategory = getCurrentCategory();
+
+    switch (suggestion.type) {
+      case 'service':
+        saveRecentSearch(suggestion.value, 'service');
+        const serviceUrl = formatUrlSegment(suggestion.value);
+        console.log('Navigating to service:', serviceUrl); // 添加日誌
+        navigate(`/${serviceUrl}`);
+        break;
+
+      case 'city':
+        saveRecentSearch(suggestion.value, 'city');
+        const cityUrl = formatUrlSegment(suggestion.value);
+        if (currentCategory && currentCategory !== 'search' && currentCategory !== 'all') {
+          console.log('Navigating to category/city:', `/${currentCategory}/${cityUrl}`); // 添加日誌
+          navigate(`/${currentCategory}/${cityUrl}`);
+        } else {
+          console.log('Navigating to all/city:', `/all/${cityUrl}`); // 添加日誌
+          navigate(`/all/${cityUrl}`);
+        }
+        break;
+
+      case 'business':
+        saveRecentSearch(suggestion.value, 'business');
+        console.log('Navigating to business:', `/business/${suggestion.id}`); // 添加日誌
+        navigate(`/business/${suggestion.id}`);
+        break;
+
+      default:
+        if (query.trim()) {
+          const searchQuery = formatUrlSegment(query.trim());
+          console.log('Navigating to search:', `/search/${searchQuery}`); // 添加日誌
+          navigate(`/search/${searchQuery}`);
+        }
+    }
+    setShowSuggestions(false);
+    setQuery('');
+  };
+
+  // 獲取搜尋建議
+  const getSuggestions = (searchQuery) => {
+    const lowercaseQuery = searchQuery.toLowerCase();
+    
+    // 服務建議
+    const serviceMatches = CATEGORIES.filter(service =>
+      service.toLowerCase().includes(lowercaseQuery)
+    ).map(service => ({
+      type: 'service',
+      value: service
+    }));
+
+    // 城市建議
+    const cityMatches = Object.entries(CITY_SERVICES['United States'])
+      .filter(([city]) => city.toLowerCase().includes(lowercaseQuery))
+      .map(([city]) => ({
+        type: 'city',
+        value: city
+      }));
+
+    // 商家建議
+    const businessMatches = MOCK_BUSINESSES
+      .filter(business => 
+        business.name.toLowerCase().includes(lowercaseQuery) ||
+        business.category.toLowerCase().includes(lowercaseQuery)
+      )
+      .map(business => ({
+        type: 'business',
+        value: business.name,
+        id: business.id,
+        category: business.category
+      }));
+
+    return {
+      services: serviceMatches.slice(0, 3),
+      cities: cityMatches.slice(0, 3),
+      businesses: businessMatches.slice(0, 3)
+    };
+  };
+
+  // 從 URL 獲取當前類別
+  const getCurrentCategory = () => {
+    const pathParts = location.pathname.split('/').filter(Boolean);
+    return pathParts[0] || '';
+  };
+
+  // 從 URL 獲取當前城市
+  const getCurrentCity = () => {
+    const pathParts = location.pathname.split('/').filter(Boolean);
+    return pathParts.length >= 2 ? pathParts[1] : '';
+  };
+
+  // 儲存最近搜尋
+  const saveRecentSearch = (searchTerm, type) => {
+    const newSearch = { term: searchTerm, type, timestamp: Date.now() };
+    const updated = [newSearch, ...recentSearches.filter(s => 
+      s.term !== searchTerm
+    )].slice(0, 5);
+    
+    setRecentSearches(updated);
+    localStorage.setItem('recentSearches', JSON.stringify(updated));
+  };
+
+  // 載入最近搜尋
+  useEffect(() => {
+    const savedSearches = localStorage.getItem('recentSearches');
+    if (savedSearches) {
+      setRecentSearches(JSON.parse(savedSearches));
+    }
+  }, []);
+
+  const { services, cities, businesses } = getSuggestions(query);
+  const hasResults = services.length > 0 || cities.length > 0 || businesses.length > 0;
+
+  // 處理點擊建議項目
+  const handleSuggestionClick = (suggestion) => {
+    console.log('Suggestion clicked:', suggestion); // 添加日誌
+    handleSearch(suggestion);
+  };
 
   return (
     <div className="relative w-full max-w-[640px]">
@@ -83,7 +205,7 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
                 <div
                   key={`${search.term}-${search.timestamp}`}
                   className="px-4 py-3 cursor-pointer hover:bg-gray-50"
-                  onClick={() => handleSearch({ 
+                  onClick={() => handleSuggestionClick({ 
                     type: search.type, 
                     value: search.term 
                   })}
@@ -109,7 +231,7 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
                     <div
                       key={service.value}
                       className="px-4 py-3 cursor-pointer hover:bg-gray-50"
-                      onClick={() => handleSearch(service)}
+                      onClick={() => handleSuggestionClick(service)}
                     >
                       <div className="flex items-center">
                         <FaSearch className="h-4 w-4 text-gray-400 mr-2" />
@@ -130,7 +252,7 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
                     <div
                       key={city.value}
                       className="px-4 py-3 cursor-pointer hover:bg-gray-50"
-                      onClick={() => handleSearch(city)}
+                      onClick={() => handleSuggestionClick(city)}
                     >
                       <div className="flex items-center">
                         <FaSearch className="h-4 w-4 text-gray-400 mr-2" />
@@ -151,7 +273,7 @@ const SearchBar = ({ onSearch, showFilters, setShowFilters }) => {
                     <div
                       key={business.id}
                       className="px-4 py-3 cursor-pointer hover:bg-gray-50"
-                      onClick={() => handleSearch(business)}
+                      onClick={() => handleSuggestionClick(business)}
                     >
                       <div className="flex items-center">
                         <FaSearch className="h-4 w-4 text-gray-400 mr-2" />

@@ -9,21 +9,12 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        
-        {/* 類別頁面 */}
+        <Route path="/search/:query" element={<BusinessListings />} />
+        <Route path="/all/:city" element={<BusinessListings />} />
         <Route path="/:category" element={<BusinessListings />} />
-        
-        {/* 類別+城市頁面 */}
         <Route path="/:category/:city" element={<BusinessListings />} />
-        
-        {/* 類別+城市+區域頁面 */}
         <Route path="/:category/:city/:district" element={<BusinessListings />} />
-        
-        {/* 商家詳情頁面 */}
         <Route path="/business/:id" element={<BusinessProfile />} />
-
-        {/* 搜尋結果頁面 */}
-        <Route path="/search" element={<BusinessListings />} />
       </Routes>
     </Router>
   );

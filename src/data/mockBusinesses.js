@@ -1,4 +1,3 @@
-// 場所類型（venues）
 export const CATEGORIES = [
   'Hair Salon',
   'Nail Salon',
@@ -17,253 +16,7 @@ export const CATEGORIES = [
   'Hair Removal Center'
 ];
 
-// 服務項目（treatments）
-export const TREATMENTS = {
-  'Hair Salon': [
-    'Haircut',
-    'Hair Coloring',
-    'Highlights',
-    'Balayage',
-    'Hair Treatment',
-    'Brazilian Blowout',
-    'Hair Extensions',
-    'Keratin Treatment',
-    'Hair Styling',
-    'Root Touch-up',
-    'Deep Conditioning',
-    'Scalp Treatment',
-    'Bridal Hair',
-    'Children\'s Haircut'
-  ],
-  'Nail Salon': [
-    'Manicure',
-    'Pedicure',
-    'Gel Nails',
-    'Acrylic Nails',
-    'Nail Art',
-    'Nail Extensions',
-    'Paraffin Treatment',
-    'Express Manicure',
-    'Dipping Powder',
-    'Nail Repair',
-    'Hand Massage',
-    'Foot Massage',
-    'Polish Change',
-    'Nail Removal'
-  ],
-  'Spa': [
-    'Swedish Massage',
-    'Deep Tissue Massage',
-    'Hot Stone Massage',
-    'Aromatherapy',
-    'Body Scrub',
-    'Body Wrap',
-    'Hydrotherapy',
-    'Couples Massage',
-    'Foot Reflexology',
-    'Steam Room',
-    'Sauna',
-    'Mud Bath',
-    'Detox Treatment',
-    'Spa Packages'
-  ],
-  'Beauty Salon': [
-    'Makeup Application',
-    'Waxing',
-    'Threading',
-    'Lash Extensions',
-    'Facial',
-    'Microblading',
-    'Tinting',
-    'Hair Styling',
-    'Bridal Packages',
-    'Special Event Makeup',
-    'Makeup Lessons',
-    'Beauty Consultation',
-    'Brow Shaping',
-    'Face Massage'
-  ],
-  'Barbershop': [
-    'Men\'s Haircut',
-    'Beard Trim',
-    'Hot Towel Shave',
-    'Hair Design',
-    'Color & Highlights',
-    'Facial Grooming',
-    'Head Shave',
-    'Beard Grooming',
-    'Kids Haircut',
-    'Hair Tattoo',
-    'Scalp Treatment',
-    'Face Massage',
-    'Line Up',
-    'Beard Coloring'
-  ],
-  'Massage Center': [
-    'Thai Massage',
-    'Sports Massage',
-    'Reflexology',
-    'Shiatsu',
-    'Prenatal Massage',
-    'Couples Massage',
-    'Chair Massage',
-    'Lymphatic Drainage',
-    'Trigger Point Therapy',
-    'Myofascial Release',
-    'Cupping Therapy',
-    'Back Massage',
-    'Neck Massage',
-    'Full Body Massage'
-  ],
-  'Skincare Clinic': [
-    'Chemical Peel',
-    'Microdermabrasion',
-    'LED Therapy',
-    'Acne Treatment',
-    'Anti-aging Treatment',
-    'Hydrafacial',
-    'Oxygen Facial',
-    'Dermaplaning',
-    'Micro-needling',
-    'Skin Analysis',
-    'Laser Treatment',
-    'Scar Treatment',
-    'Pigmentation Treatment',
-    'Rosacea Treatment'
-  ],
-  'Wellness Center': [
-    'Meditation',
-    'Yoga',
-    'Acupuncture',
-    'Nutritional Counseling',
-    'Reiki',
-    'Sound Therapy',
-    'Crystal Healing',
-    'Energy Healing',
-    'Life Coaching',
-    'Stress Management',
-    'Mindfulness Classes',
-    'Wellness Consultation',
-    'Holistic Healing',
-    'Chakra Balancing'
-  ],
-  'Lash Studio': [
-    'Classic Lash Extensions',
-    'Volume Lash Extensions',
-    'Hybrid Lash Extensions',
-    'Lash Lift',
-    'Lash Tinting',
-    'Lash Removal',
-    'Bottom Lashes',
-    'Colored Lashes',
-    'Lash Fill',
-    'Express Lashes',
-    'Mega Volume Lashes',
-    'Natural Lashes',
-    'Dramatic Lashes',
-    'Lash Consultation'
-  ],
-  'Waxing Studio': [
-    'Brazilian Wax',
-    'Full Body Wax',
-    'Leg Wax',
-    'Arm Wax',
-    'Face Wax',
-    'Back Wax',
-    'Chest Wax',
-    'Bikini Wax',
-    'Underarm Wax',
-    'Eyebrow Wax',
-    'Upper Lip Wax',
-    'Half Leg Wax',
-    'Full Leg Wax',
-    'Intimate Waxing'
-  ],
-  'Makeup Studio': [
-    'Bridal Makeup',
-    'Special Event Makeup',
-    'Natural Makeup',
-    'Glamour Makeup',
-    'Airbrush Makeup',
-    'Makeup Lessons',
-    'Editorial Makeup',
-    'Halloween Makeup',
-    'Makeup Consultation',
-    'Group Makeup',
-    'Teen Makeup',
-    'Mature Skin Makeup',
-    'Male Makeup',
-    'Makeup Trial'
-  ],
-  'Tanning Salon': [
-    'Spray Tan',
-    'UV Tanning',
-    'Airbrush Tanning',
-    'Custom Spray Tan',
-    'Express Tan',
-    'Full Body Tan',
-    'Face Tan',
-    'Mobile Tanning',
-    'Tan Removal',
-    'Tan Extension',
-    'Body Contouring',
-    'Competition Tan',
-    'Bridal Tan',
-    'Tan Consultation'
-  ],
-  'Eyebrow Bar': [
-    'Eyebrow Threading',
-    'Eyebrow Waxing',
-    'Eyebrow Tinting',
-    'Microblading',
-    'Brow Lamination',
-    'Henna Brows',
-    'Powder Brows',
-    'Ombre Brows',
-    'Brow Mapping',
-    'Brow Shaping',
-    'Brow Touch-up',
-    'Brow Consultation',
-    'Combination Brows',
-    'Brow Emergency Fix'
-  ],
-  'Med Spa': [
-    'Botox',
-    'Dermal Fillers',
-    'Laser Hair Removal',
-    'IPL Treatment',
-    'RF Skin Tightening',
-    'CoolSculpting',
-    'Microneedling',
-    'PRP Treatment',
-    'Body Contouring',
-    'Skin Rejuvenation',
-    'Scar Revision',
-    'Cellulite Treatment',
-    'Lip Enhancement',
-    'Medical Grade Facial'
-  ],
-  'Hair Removal Center': [
-    'Laser Hair Removal',
-    'Electrolysis',
-    'IPL Hair Removal',
-    'Brazilian Laser',
-    'Full Body Laser',
-    'Face Laser',
-    'Underarm Laser',
-    'Leg Laser',
-    'Bikini Line Laser',
-    'Back Laser',
-    'Chest Laser',
-    'Arm Laser',
-    'Consultation',
-    'Touch-up Treatment'
-  ]
-};
-
-// 新增城市相關資料
 export const MOCK_BUSINESSES = [
-  // New York Businesses
   {
     id: 1,
     name: "Elite Hair Studio",
@@ -319,7 +72,6 @@ export const MOCK_BUSINESSES = [
       sunday: "Closed"
     }
   },
-  // Los Angeles Businesses
   {
     id: 2,
     name: "Luxe Hair Lounge",
@@ -372,7 +124,6 @@ export const MOCK_BUSINESSES = [
       sunday: "11:00 AM - 5:00 PM"
     }
   },
-  // Chicago Businesses
   {
     id: 3,
     name: "Style & Grace Salon",
@@ -424,7 +175,6 @@ export const MOCK_BUSINESSES = [
       sunday: "Closed"
     }
   },
-  // Miami Businesses
   {
     id: 4,
     name: "Chic & Shine",
@@ -475,7 +225,6 @@ export const MOCK_BUSINESSES = [
       sunday: "Closed"
     }
   },
-  // San Francisco Businesses
   {
     id: 5,
     name: "Classic Cuts Barbershop",
@@ -527,3 +276,27 @@ export const MOCK_BUSINESSES = [
     }
   }
 ];
+
+export const NEIGHBORHOODS = {
+  'New York': [
+    'Manhattan',
+    'Brooklyn',
+    'Queens',
+    'Bronx',
+    'Staten Island'
+  ],
+  'Los Angeles': [
+    'Downtown LA',
+    'Hollywood',
+    'Beverly Hills',
+    'Santa Monica',
+    'Venice'
+  ],
+  'San Francisco': [
+    'Financial District',
+    'Mission District',
+    'North Beach',
+    'Castro',
+    'Hayes Valley'
+  ]
+};

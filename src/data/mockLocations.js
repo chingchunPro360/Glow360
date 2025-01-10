@@ -29,3 +29,27 @@ export const CITY_SERVICES = {
     'Liverpool': ['Hair Extensions', 'Gel Nails', 'Hot Stone Massage', 'Facial', 'Tanning', 'Waxing', 'Threading']
   }
 };
+
+export const NEIGHBORHOODS = {
+  'New York': [
+    'Manhattan',
+    'Brooklyn',
+    'Queens',
+    'Bronx',
+    'Staten Island'
+  ],
+  'Los Angeles': [
+    'Downtown LA',
+    'Hollywood',
+    'Beverly Hills',
+    'Santa Monica',
+    'Venice'
+  ],
+  'San Francisco': [
+    'Financial District',
+    'Mission District',
+    'North Beach',
+    'Castro',
+    'Hayes Valley'
+  ]
+};
